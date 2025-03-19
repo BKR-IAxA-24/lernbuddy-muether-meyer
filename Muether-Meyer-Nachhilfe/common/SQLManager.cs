@@ -25,7 +25,7 @@ namespace Muether_Meyer_Nachhilfe.common
                     return db.QueryToDataTable("SELECT * FROM tutor");
                 case "student":
                     return db.QueryToDataTable("SELECT * FROM schueler");
-                case "^nachhilfe":
+                case "nachhilfe":
                     return db.QueryToDataTable("SELECT * FROM nachhilfe");
                 default:
                     break;
