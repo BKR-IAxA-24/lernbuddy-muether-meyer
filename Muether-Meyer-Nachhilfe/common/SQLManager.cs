@@ -101,7 +101,6 @@ namespace Muether_Meyer_Nachhilfe.common
             return false; // Anmeldung fehlgeschlagen
         }
 
-
         /// <summary>
         /// Hash-Funktion für Passwörter
         /// <param name="pKlartext">Klartext-Passwort</param>
@@ -164,6 +163,12 @@ namespace Muether_Meyer_Nachhilfe.common
 
             db.ExecuteQuery(insertRow);
         }
+
+
+        public List<string> getFaecher(){
+            return new List<string>();
+        }
+
 
     }
 }
