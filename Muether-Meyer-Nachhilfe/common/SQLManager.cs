@@ -8,15 +8,17 @@ using Muether_Meyer_Nachhilfe.common;
 using System.Windows.Controls;
 using System.Data;
 using System.Windows.Documents;
+using System.Windows;
 namespace Muether_Meyer_Nachhilfe.common
 {
     internal class SQLManager
     {
-        private Dbase db = new Dbase("localhost", "nachhilfedb", "root", "");
+        private Dbase db;
         private string PEPPER = "dsakldsakjdsakdsakjdsakjdsakjdsalkjdslkjdsalkjdsalkj";
 
         public SQLManager()
         {
+            db = new Dbase("localhost", "nachhilfedb", "root", "");
         }
         public DataTable getStudents(string table)
         {
@@ -165,9 +167,42 @@ namespace Muether_Meyer_Nachhilfe.common
         }
 
 
-        public List<string> getFaecher(){
-            return new List<string>();
+        public List<Fach> getFaecher()
+        {
+            List<Fach> faches = new List<Fach>();
+
+            DataTable dataTable = db.TableToDataTable("fach");
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int fachID = Convert.ToInt32(row["fachID"]);
+                string bezeichnung = row["bezeichnung"].ToString();
+                Fach fach = new Fach(fachID, bezeichnung);
+                faches.Add(fach);
+            }
+
+            return faches;
+
+
         }
+        public bool existFach(string name)
+        {
+
+            List<Fach> faches = getFaecher();
+
+            foreach (Fach fach in faches)
+            {
+
+                if (fach.Equals(name)) return true;
+
+            }
+
+            return false;
+
+
+        }
+
+        
 
 
     }
