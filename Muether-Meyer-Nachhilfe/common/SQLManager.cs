@@ -71,7 +71,7 @@ namespace Muether_Meyer_Nachhilfe.common
             string query = $@"
         SELECT (SHA2(CONCAT('{pepperHashedPassword}', u.salt), 256) = u.Passwort) AS result
         FROM login AS u
-        where u.E-Mail = '{pEmail}';
+        where u.EMail = '{pEmail}';
         ";
 
             try
@@ -152,7 +152,7 @@ namespace Muether_Meyer_Nachhilfe.common
 
             // Der Benutzer wird in die Login-Tabelle eingefügt
             string insertRow = $@"
-    INSERT INTO login (E-Mail, Passwort, admin, salt)
+    INSERT INTO login (EMail, Passwort, admin, salt)
     SELECT
         '{pUserName}',
         SHA2(CONCAT('{pepperHashedPassword}', s.salt), 256),
