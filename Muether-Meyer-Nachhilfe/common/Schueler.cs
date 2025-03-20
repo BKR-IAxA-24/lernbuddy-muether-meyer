@@ -13,7 +13,7 @@ namespace Muether_Meyer_Nachhilfe.common
         private string vorname;
         private string nachname;
         private Genders geschlecht;
-        private int bildungsgangID;
+
         private int klassenID;
         
         private string email;
@@ -43,11 +43,7 @@ namespace Muether_Meyer_Nachhilfe.common
             get { return geschlecht; }
             set { geschlecht = value; }
         }
-        public int BildungsgangID
-        {
-            get { return bildungsgangID; }
-            set { bildungsgangID = value; }
-        }
+ 
         public int KlassenID
         {
             get { return klassenID; }
@@ -62,13 +58,12 @@ namespace Muether_Meyer_Nachhilfe.common
 
 
         //Konstruktor 
-        public Schueler(int schuelerID, string vorname, string nachname, Genders geschlecht, int bildungsgangID, int klassenID, string email)
+        public Schueler(int schuelerID, string vorname, string nachname, Genders geschlecht, int klassenID, string email)
         {
             SchuelerID = schuelerID;
             Vorname = vorname;
             Nachname = nachname;
             Geschlecht = geschlecht;
-            BildungsgangID = bildungsgangID;
             KlassenID = klassenID;
             Email = email;
         }
