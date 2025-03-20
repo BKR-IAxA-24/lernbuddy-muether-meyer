@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Documents.DocumentStructures;
 
 namespace Muether_Meyer_Nachhilfe.common
 {
@@ -14,7 +15,8 @@ namespace Muether_Meyer_Nachhilfe.common
         private Genders geschlecht;
         private int bildungsgangID;
         private int klassenID;
-
+        
+        private string email;
 
 
         //Getter und Setter 
@@ -52,8 +54,15 @@ namespace Muether_Meyer_Nachhilfe.common
             set { klassenID = value; }
         }
 
+        public string Email
+        {
+            get { return email; }
+            set { email = value; }
+        }
+
+
         //Konstruktor 
-        public Schueler(int schuelerID, string vorname, string nachname, Genders geschlecht, int bildungsgangID, int klassenID)
+        public Schueler(int schuelerID, string vorname, string nachname, Genders geschlecht, int bildungsgangID, int klassenID, string email)
         {
             SchuelerID = schuelerID;
             Vorname = vorname;
@@ -61,6 +70,7 @@ namespace Muether_Meyer_Nachhilfe.common
             Geschlecht = geschlecht;
             BildungsgangID = bildungsgangID;
             KlassenID = klassenID;
+            Email = email;
         }
 
         // ENUM für Geschlecht 
