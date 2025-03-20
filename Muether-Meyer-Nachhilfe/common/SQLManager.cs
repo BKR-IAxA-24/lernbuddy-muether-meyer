@@ -20,7 +20,7 @@ namespace Muether_Meyer_Nachhilfe.common
         {
             db = new Dbase("localhost", "nachhilfedb", "root", "");
         }
-
+       
         #region Login und Registrierung
 
         /// <summary>
@@ -417,7 +417,7 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <param bezeichnung="schuelerID">Die ID des Schülers.</param>
         /// <param bezeichnung="fachID">Die ID des Faches.</param>
         /// <returns>True, wenn das Nachhilfegesuch existiert, andernfalls false.</returns>
-        public bool existNachhilfegesuch(int schuelerID, int fachID)
+        public bool existNachhilfegesuch(int schuelerID , int fachID)
         {
             List<Nachhilfegesuch> nachhilfegesuches = getNachhilfegesuches("");
 
@@ -499,12 +499,12 @@ namespace Muether_Meyer_Nachhilfe.common
                 int schuelerID = Convert.ToInt32(row["SchuelerID"]);
                 string vorname = row["Vorname"].ToString();
                 string nachname = row["Nachname"].ToString();
-                Schueler.Genders genders = (Schueler.Genders)Enum.Parse(typeof(Schueler.Genders), row["Geschlecht"].ToString());
+                Schueler.Genders genders = (Schueler.Genders) Enum.Parse(typeof(Schueler.Genders), row["Geschlecht"].ToString());
                 string email = row["EMail"].ToString();
                 int klasseID = Convert.ToInt32(row["KlassenID"]);
                 int bildungsgangID = Convert.ToInt32(row["BildungsgangID"]);
 
-                Schueler schueler = new Schueler(schuelerID, vorname, nachname, genders, bildungsgangID, klasseID, email);
+                Schueler schueler = new Schueler(schuelerID, vorname, nachname, genders, bildungsgangID ,  klasseID , email);
 
                 schuelers.Add(schueler);
             }
