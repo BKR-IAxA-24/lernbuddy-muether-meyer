@@ -58,7 +58,8 @@ namespace Muether_Meyer_Nachhilfe.Pages
 
         private void btnRegisterHere_Click(object sender, RoutedEventArgs e)
         {
-
+            Registrieren register = new Registrieren();
+            register.Show();
         }
 
         private void txtEmail_TextChanged(object sender, TextChangedEventArgs e)

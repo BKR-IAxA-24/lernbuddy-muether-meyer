@@ -884,7 +884,7 @@ FROM
         public List<wochentag> GetWochentags()
         {
             List<wochentag> wochentags = new List<wochentag>();
-            DataTable dataTable = db.TableToDataTable("wochentag");
+            DataTable dataTable = db.TableToDataTable("wochentage");
             if (dataTable == null)
             {
                 return null;
@@ -896,7 +896,7 @@ FROM
             foreach (DataRow row in dataTable.Rows)
             {
                 int wochentagID = Convert.ToInt32(row["WTID"]);
-                string bezeichnung = row["Bezeichnung"].ToString();
+                string bezeichnung = row["Tag"].ToString();
                 wochentag wochentag = new wochentag(wochentagID, bezeichnung);
                 wochentags.Add(wochentag);
             }

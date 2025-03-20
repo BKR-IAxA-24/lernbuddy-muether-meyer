@@ -28,28 +28,16 @@
         <Label Content="Fach Auswahl" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="30,250,50,0"/>
         <ListBox x:Name="lstFachAuswahl" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="30,275,50,0"  SelectionMode="Multiple" Width="200" Height="auto" SelectionChanged="lstFachAuswahl_SelectionChanged"/>
         <DataGrid x:Name="dataGrid"
-                  AutoGenerateColumns="False"
-                  ItemsSource="{Binding WochentageListe}"
-                  VerticalAlignment="Bottom"
-                  Margin="25,0,0,75"
-                  Height="200"
-                  IsReadOnly="False">
+          AutoGenerateColumns="False"
+          ItemsSource="{Binding WochentageListe}"
+          VerticalAlignment="Bottom"
+          Margin="25,0,0,75"
+          Height="200"
+          IsReadOnly="False">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Wochentag" Binding="{Binding Name}" IsReadOnly="True" Width="*"/>
-                <DataGridTemplateColumn Header="Startzeit" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBox Text="{Binding Startzeit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
-                <DataGridTemplateColumn Header="Endzeit" Width="*">
-                    <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <TextBox Text="{Binding Endzeit, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        </DataTemplate>
-                    </DataGridTemplateColumn.CellTemplate>
-                </DataGridTemplateColumn>
+                <DataGridTextColumn Header="Startzeit" Binding="{Binding Startzeit, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
+                <DataGridTextColumn Header="Endzeit" Binding="{Binding Endzeit, UpdateSourceTrigger=PropertyChanged}" Width="*"/>
             </DataGrid.Columns>
         </DataGrid>
         <Button x:Name="btnLogin" Content="Login" HorizontalAlignment="Left" Margin="25,0,0,25" VerticalAlignment="Bottom"  Width="50" Height="25" Click="btnLogin_Click"  />
