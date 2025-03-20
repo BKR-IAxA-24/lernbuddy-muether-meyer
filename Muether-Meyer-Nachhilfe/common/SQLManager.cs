@@ -364,7 +364,7 @@ namespace Muether_Meyer_Nachhilfe.common
         {
             List<Nachhilfegesuch> nachhilfegesuches = new List<Nachhilfegesuch>();
 
-            DataTable dataTable = db.TableToDataTable("nachhilfegesuch");
+            DataTable dataTable = db.QueryToDataTable("SELECT * FROM `nachhilfegesuch` ORDER BY `nachhilfegesuch`.`ErstelltAm` DESC ");
             if (dataTable == null)
             {
                 return null;
