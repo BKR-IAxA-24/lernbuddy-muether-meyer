@@ -867,6 +867,8 @@ namespace Muether_Meyer_Nachhilfe.common
         #endregion
 
 
+        #region Wochentag
+        #endregion
 
 
 
