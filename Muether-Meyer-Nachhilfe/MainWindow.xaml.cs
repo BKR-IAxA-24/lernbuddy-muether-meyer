@@ -18,11 +18,16 @@ namespace Muether_Meyer_Nachhilfe
     public partial class MainWindow : Window
     {
 
+
         public MainWindow()
         {
             InitializeComponent();
             Dashboard dash = new Dashboard();
             dash.Show();
+
+            Registrieren reg = new Registrieren();
+            reg.Show();
+
         }
     }
 }

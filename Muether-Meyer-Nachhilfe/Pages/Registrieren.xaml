@@ -1,0 +1,72 @@
+﻿<Window x:Class="Muether_Meyer_Nachhilfe.Pages.Registrieren"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Muether_Meyer_Nachhilfe.Pages"
+        mc:Ignorable="d"
+        Title="Registrieren" Height="450" Width="800">
+    <Grid Margin="10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Vorname -->
+        <TextBlock Text="Vorname:" Grid.Row="0" Grid.Column="0" VerticalAlignment="Center"/>
+        <TextBox x:Name="txtVorname" Grid.Row="0" Grid.Column="1" Margin="5"/>
+
+        <!-- Nachname -->
+        <TextBlock Text="Nachname:" Grid.Row="1" Grid.Column="0" VerticalAlignment="Center"/>
+        <TextBox x:Name="txtNachname" Grid.Row="1" Grid.Column="1" Margin="5"/>
+
+        <!-- Email -->
+        <TextBlock Text="Email:" Grid.Row="2" Grid.Column="0" VerticalAlignment="Center"/>
+        <TextBox x:Name="txtEmail" Grid.Row="2" Grid.Column="1" Margin="5"/>
+
+        <!-- Geschlecht -->
+        <TextBlock Text="Geschlecht:" Grid.Row="3" Grid.Column="0" VerticalAlignment="Center"/>
+        <ComboBox x:Name="cmbGeschlecht" Grid.Row="3" Grid.Column="1" Margin="5">
+            <ComboBoxItem Content="Männlich" />
+            <ComboBoxItem Content="Weiblich" />
+            <ComboBoxItem Content="Divers" />
+        </ComboBox>
+
+        <!-- Klasse -->
+        <TextBlock Text="Klasse:" Grid.Row="4" Grid.Column="0" VerticalAlignment="Center"/>
+        <TextBox x:Name="txtKlasse" Grid.Row="4" Grid.Column="1" Margin="5"/>
+
+        <!-- Passwort -->
+        <TextBlock Text="Passwort:" Grid.Row="5" Grid.Column="0" VerticalAlignment="Center"/>
+        <PasswordBox x:Name="txtPasswort" Grid.Row="5" Grid.Column="1" Margin="5"/>
+
+        <!-- Tutorfach -->
+        <TextBlock Text="Tutorfach:" Grid.Row="6" Grid.Column="0" VerticalAlignment="Center"/>
+        <TextBox x:Name="txtTutorfach" Grid.Row="6" Grid.Column="1" Margin="5"/>
+
+        <!-- Fächer Auswahl -->
+        <TextBlock Text="Fächer:" Grid.Row="7" Grid.Column="0" VerticalAlignment="Center"/>
+        <ListBox x:Name="lstFachAuswahl" Grid.Row="7" Grid.Column="1" Margin="5" SelectionMode="Multiple" Width="200" SelectionChanged="lstFachAuswahl_SelectionChanged">
+        
+            <!-- Weitere Fächer können hier hinzugefügt werden -->
+        </ListBox>
+
+       
+
+        <!-- Registrieren Button -->
+        <StackPanel Grid.Row="9" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <Button x:Name="btnRegister" Content="Registrieren" Width="100" Height="30" Click="btnRegister_Click_1"/>
+        </StackPanel>
+    </Grid>
+</Window>
