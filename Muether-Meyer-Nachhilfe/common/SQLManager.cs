@@ -157,7 +157,7 @@ namespace Muether_Meyer_Nachhilfe.common
             foreach (DataRow row in dataTable.Rows)
             {
                 int fachID = Convert.ToInt32(row["fachID"]);
-                string bezeichnung = row["tag"].ToString();
+                string bezeichnung = row["Bezeichnung"].ToString();
                 Fach fach = new Fach(fachID, bezeichnung);
                 faches.Add(fach);
             }
