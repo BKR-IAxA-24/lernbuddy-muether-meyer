@@ -1,0 +1,53 @@
+﻿<Window x:Class="Muether_Meyer_Nachhilfe.Pages.Dashboard"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Muether_Meyer_Nachhilfe.Pages"
+        mc:Ignorable="d"
+        Title="Dashboard" WindowStyle="None"
+        WindowState="Maximized"
+        ResizeMode="NoResize"
+        >
+    <Grid>
+        <DataGrid x:Name="dataOutput" AutoGenerateColumns="False" Margin="10,10,10,10" FontSize="60" GridLinesVisibility="All">
+            <DataGrid.Resources>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="BorderThickness" Value="0,0,2,2"/>
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Style.Triggers>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
+                            <Setter Property="Background" Value="Gray"/>
+                        </Trigger>
+                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
+                            <Setter Property="Background" Value="LightBlue"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="BorderThickness" Value="0,0,2,2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                    
+                </Style>
+                <Style x:Key="CenterAlignedTextStyle" TargetType="TextBlock">
+                    <Setter Property="TextAlignment" Value="Center"/>
+                </Style>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Fach" Binding="{Binding Fach}" Width="*" 
+                                    ElementStyle="{StaticResource CenterAlignedTextStyle}" 
+                                    EditingElementStyle="{StaticResource CenterAlignedTextStyle}" />
+                <DataGridTextColumn Header="Beschreibung" Binding="{Binding Beschreibung}" Width="*" 
+                                    ElementStyle="{StaticResource CenterAlignedTextStyle}" 
+                                    EditingElementStyle="{StaticResource CenterAlignedTextStyle}" />
+                <DataGridTextColumn Header="Erstellt am" Binding="{Binding Created_at}" Width="*" 
+                                    ElementStyle="{StaticResource CenterAlignedTextStyle}" 
+                                    EditingElementStyle="{StaticResource CenterAlignedTextStyle}" />
+                <DataGridTextColumn Header="Bildungsgang" Binding="{Binding Bildungsgang}" Width="*" 
+                                    ElementStyle="{StaticResource CenterAlignedTextStyle}" 
+                                    EditingElementStyle="{StaticResource CenterAlignedTextStyle}" />
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Window>
