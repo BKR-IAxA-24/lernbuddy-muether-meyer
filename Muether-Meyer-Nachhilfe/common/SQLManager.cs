@@ -754,6 +754,120 @@ namespace Muether_Meyer_Nachhilfe.common
 
         #endregion
 
+        #region zeitspanne
+
+        /// <summary>
+        /// Ruft eine Liste aller Zeitspannen aus der Datenbank ab.
+        /// </summary>
+        /// <returns>Eine Liste von Zeitspanne-Objekten oder null, wenn keine Daten gefunden wurden.</returns>
+        public List<Zeitspanne> GetZeitspannes()
+        {
+            DataTable dataTable = db.TableToDataTable("zeitspanne");
+            List<Zeitspanne> zeitspannes = new List<Zeitspanne>();
+            if (dataTable == null)
+            {
+                return null;
+            }
+
+            if (dataTable.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int wochentagID = Convert.ToInt32(row["WTID"]);
+                int schuelerID = Convert.ToInt32(row["SID"]);
+                string start = row["Start"].ToString();
+                string ende = row["Ende"].ToString();
+
+                Zeitspanne zeitspanne = new Zeitspanne(wochentagID, schuelerID, Convert.ToInt32(start), Convert.ToInt32(ende));
+
+
+                zeitspannes.Add(zeitspanne);
+            }
+
+            return zeitspannes;
+
+        }
+
+        /// <summary>
+        /// Überprüft, ob eine Zeitspanne mit den angegebenen Parametern existiert.
+        /// </summary>
+        /// <param name="wochentagID">Die ID des Wochentags.</param>
+        /// <param name="schuelerID">Die ID des Schülers.</param>
+        /// <param name="start">Die Startzeit der Zeitspanne.</param>
+        /// <param name="end">Die Endzeit der Zeitspanne.</param>
+        /// <returns>True, wenn die Zeitspanne existiert, andernfalls false.</returns>
+        public bool existZeitspanne(int wochentagID, int schuelerID , int start , int end)
+        {
+            List<Zeitspanne> zeitspannes = GetZeitspannes();
+            foreach (Zeitspanne zeitspanne in zeitspannes)
+            {
+                if (zeitspanne.WochentagID == wochentagID && zeitspanne.SchuelerID == schuelerID && zeitspanne.Startzeit == start && zeitspanne.Endzeit == end ) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Erstellt eine neue Zeitspanne in der Datenbank.
+        /// </summary>
+        /// <param name="wochentagID">Die ID des Wochentags.</param>
+        /// <param name="schuelerID">Die ID des Schülers.</param>
+        /// <param name="start">Die Startzeit der Zeitspanne.</param>
+        /// <param name="ende">Die Endzeit der Zeitspanne.</param>
+        /// <returns>True, wenn die Zeitspanne erfolgreich erstellt wurde, andernfalls false.</returns>
+        public bool createZeitspanne(int wochentagID, int schuelerID, int start, int ende)
+        {
+            if (existZeitspanne(wochentagID, schuelerID)) return false;
+            string query = $@"INSERT INTO `zeitspanne`(`WTID`, `SID`, `Start`, `Ende`) VALUES ('{wochentagID}','{schuelerID}','{start}','{ende}')";
+            db.ExecuteQuery(query);
+            return true;
+        }
+
+        /// <summary>
+        /// Ruft eine Liste aller Zeitspannen eines bestimmten Schülers aus der Datenbank ab.
+        /// </summary>
+        /// <param name="schuelerID">Die ID des Schülers.</param>
+        /// <returns>Eine Liste von Zeitspanne-Objekten.</returns>
+        public List<Zeitspanne> getZeitspaneebySchueler(int schuelerID)
+        {
+            List<Zeitspanne> zeitspannes = GetZeitspannes();
+           
+            foreach (Zeitspanne zeitspanne in zeitspannes)
+            {
+               
+                if (zeitspanne.SchuelerID != schuelerID)
+                {
+                    zeitspannes.Remove(zeitspanne);
+                }
+
+
+            }
+            return zeitspannes;
+        }
+
+        /// <summary>
+        /// Löscht eine Zeitspanne aus der Datenbank.
+        /// </summary>
+        /// <param name="wochentagID">Die ID des Wochentags.</param>
+        /// <param name="schuelerID">Die ID des Schülers.</param>
+        /// <param name="start">Die Startzeit der Zeitspanne.</param>
+        /// <param name="ende">Die Endzeit der Zeitspanne.</param>
+        /// <returns>True, wenn die Zeitspanne erfolgreich gelöscht wurde, andernfalls false.</returns
+        public bool deleteZeitspanne(int wochentagID, int schuelerID, int start, int ende)
+        {
+            if (!existZeitspanne(wochentagID, schuelerID, start, ende)) return false;
+            string query = $@"DELETE FROM `zeitspanne` WHERE `WTID` = '{wochentagID}' AND `SID` = '{schuelerID}' AND `Start` = '{start}' AND `Ende` = '{ende}'";
+            db.ExecuteQuery(query);
+            return true;
+        }
+
+
+        #endregion
+
+
+
 
 
     }
