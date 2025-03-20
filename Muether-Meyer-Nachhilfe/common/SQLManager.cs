@@ -20,7 +20,7 @@ namespace Muether_Meyer_Nachhilfe.common
         {
             db = new Dbase("localhost", "nachhilfedb", "root", "");
         }
-       
+
         #region Login und Registrierung
 
         /// <summary>
@@ -417,7 +417,7 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <param bezeichnung="schuelerID">Die ID des Schülers.</param>
         /// <param bezeichnung="fachID">Die ID des Faches.</param>
         /// <returns>True, wenn das Nachhilfegesuch existiert, andernfalls false.</returns>
-        public bool existNachhilfegesuch(int schuelerID , int fachID)
+        public bool existNachhilfegesuch(int schuelerID, int fachID)
         {
             List<Nachhilfegesuch> nachhilfegesuches = getNachhilfegesuches("");
 
@@ -499,12 +499,12 @@ namespace Muether_Meyer_Nachhilfe.common
                 int schuelerID = Convert.ToInt32(row["SchuelerID"]);
                 string vorname = row["Vorname"].ToString();
                 string nachname = row["Nachname"].ToString();
-                Schueler.Genders genders = (Schueler.Genders) Enum.Parse(typeof(Schueler.Genders), row["Geschlecht"].ToString());
+                Schueler.Genders genders = (Schueler.Genders)Enum.Parse(typeof(Schueler.Genders), row["Geschlecht"].ToString());
                 string email = row["EMail"].ToString();
                 int klasseID = Convert.ToInt32(row["KlassenID"]);
                 int bildungsgangID = Convert.ToInt32(row["BildungsgangID"]);
 
-                Schueler schueler = new Schueler(schuelerID, vorname, nachname, genders, bildungsgangID ,  klasseID , email);
+                Schueler schueler = new Schueler(schuelerID, vorname, nachname, genders, bildungsgangID, klasseID, email);
 
                 schuelers.Add(schueler);
             }
@@ -541,9 +541,334 @@ namespace Muether_Meyer_Nachhilfe.common
             return false;
         }
 
+        /// <summary>
+        /// Erstellt einen neuen Schüler in der Datenbank.
+        /// </summary>
+        /// <param name="vorname">Der Vorname des Schülers.</param>
+        /// <param name="nachname">Der Nachname des Schülers.</param>
+        /// <param name="genders">Das Geschlecht des Schülers.</param>
+        /// <param name="email">Die E-Mail-Adresse des Schülers.</param>
+        /// <param name="klasseID">Die ID der Klasse des Schülers.</param>
+        /// <returns>True, wenn der Schüler erfolgreich erstellt wurde, andernfalls false.</returns>
+        public bool createSchueler(string vorname, string nachname, Schueler.Genders genders, string email, int klasseID)
+        {
+            if (existSchueler(email)) return false;
+            string query = $@"INSERT INTO `schueler`(`Vorname`, `Nachname`, `Geschlecht`, `EMail`, `KlassenID`) VALUES ('{vorname}','{nachname},'{email},'{klasseID}')";
+            db.ExecuteQuery(query);
+            return true;
 
+
+        }
+        
+        /// <summary>
+        /// Löscht einen Schüler aus der Datenbank.
+        /// </summary>
+        /// <param name="schuelerID">Die ID des Schülers, der gelöscht werden soll.</param>
+        /// <returns>True, wenn der Schüler erfolgreich gelöscht wurde, andernfalls false.</returns>
+        public bool deleteSchueler(int schuelerID)
+        {
+            if (!existSchueler(schuelerID)) return false;
+            string query = $@"DELETE FROM `schueler` WHERE `SchuelerID` = '{schuelerID}'";
+            db.ExecuteQuery(query);
+            return true;
+        }
 
 
         #endregion
+
+        #region Tutor
+
+
+        public List<Tutor> getTutoren()
+        {
+            List<Tutor> tutoren = new List<Tutor>();
+            DataTable dataTable = db.TableToDataTable("tutor");
+            if (dataTable == null)
+            {
+                return null;
+            }
+            if (dataTable.Rows.Count == 0)
+            {
+                return null;
+            }
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int tutorID = Convert.ToInt32(row["TutorID"]);
+                int schuelerID = Convert.ToInt32(row["SchuelerID"]);
+                float genehmigt = Convert.ToSingle(row["Genehmigt"]);
+                int loginID = Convert.ToInt32(row["LoginID"]);
+
+                bool genehmigtBool = genehmigt == 1 ? true : false;
+
+                Tutor tutor = new Tutor(tutorID, schuelerID, genehmigtBool, loginID);
+                tutoren.Add(tutor);
+            }
+            return tutoren;
+        }
+
+
+        /// <summary>
+        /// Überprüft, ob ein Tutor mit der angegebenen Tutor-ID existiert.
+        /// </summary>
+        /// <param name="tutorID">Die ID des Tutors.</param>
+        /// <returns>True, wenn der Tutor existiert, andernfalls false.</returns>
+        public bool existTutor(int tutorID)
+        {
+            List<Tutor> tutoren = getTutoren();
+            foreach (Tutor tutor in tutoren)
+            {
+                if (tutor.TutorID == tutorID) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Erstellt einen neuen Tutor in der Datenbank.
+        /// </summary>
+        /// <param name="tutorID">Die ID des Tutors.</param>
+        /// <param name="schuelerID">Die ID des Schülers.</param>
+        /// <param name="genehmigt">Gibt an, ob der Tutor genehmigt ist.</param>
+        /// <param name="loginID">Die ID des Logins.</param>
+        public void createTutor(int tutorID , int schuelerID , bool genehmigt , int loginID)
+        {
+            int genehmigtInt = genehmigt ? 1 : 0;
+            string query = $@"INSERT INTO `tutor`(`TutorID`, `SchuelerID`, `Genehmigt`, `LoginID`) VALUES ('{tutorID} ','{schuelerID}','{genehmigt}','{loginID}'";
+            db.ExecuteQuery(query);
+        }
+
+        /// <summary>
+        /// Löscht einen Tutor aus der Datenbank.
+        /// </summary>
+        /// <param name="tutorID">Die ID des Tutors, der gelöscht werden soll.</param>
+        /// <returns>True, wenn der Tutor erfolgreich gelöscht wurde, andernfalls false.</returns>
+        public bool deleteTutor(int tutorID)
+        {
+            if (!existTutor(tutorID)) return false;
+            string query = $@"DELETE FROM `tutor` WHERE `TutorID` = '{tutorID}'";
+            db.ExecuteQuery(query);
+            return true;
+        }
+
+
+        /// <summary>
+        /// Aktualisiert den Genehmigungsstatus eines Tutors in der Datenbank.
+        /// </summary>
+        /// <param name="tutorID">Die ID des Tutors.</param>
+        /// <param name="genehmigt">Der neue Genehmigungsstatus des Tutors.</param>
+        /// <returns>True, wenn der Genehmigungsstatus erfolgreich aktualisiert wurde, andernfalls false.</returns>
+        public bool updateTutorGenehmigt(int tutorID, bool genehmigt)
+        {
+            if (!existTutor(tutorID)) return false;
+            int genehmigtInt = genehmigt ? 1 : 0;
+            string query = $@"UPDATE `tutor` SET `Genehmigt` = '{genehmigtInt}' WHERE `TutorID` = '{tutorID}'";
+            db.ExecuteQuery(query);
+            return true;
+        }
+
+
+        #endregion
+
+        #region Bildungsgang
+
+        /// <summary>
+        /// Ruft eine Liste aller Bildungsgänge aus der Datenbank ab.
+        /// </summary>
+        /// <returns>Eine Liste von Bildungsgang-Objekten oder null, wenn keine Daten gefunden wurden.</returns>
+        public List<bildungsgang> getBildungsgang()
+        {
+            List<bildungsgang> bildungsgangs = new List<bildungsgang>();
+            DataTable dataTable = db.TableToDataTable("bildungsgang");
+            if (dataTable == null)
+            {
+                return null;
+            }
+            if (dataTable.Rows.Count == 0)
+            {
+                return null;
+            }
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int bildungsgangID = Convert.ToInt32(row["bildungsgang"]);
+                string bezeichnung = row["Bezeichnung"].ToString();
+                bildungsgang bildungsgang = new bildungsgang(bildungsgangID, bezeichnung);
+                bildungsgangs.Add(bildungsgang);
+            }
+            return bildungsgangs;
+        }
+
+        /// <summary>
+        /// Überprüft, ob ein Bildungsgang mit der angegebenen Bildungsgang-ID existiert.
+        /// </summary>
+        /// <param name="bildungsgangID">Die ID des Bildungsgangs.</param>
+        /// <returns>True, wenn der Bildungsgang existiert, andernfalls false.</returns>
+        public bool existBildungsgang(int bildungsgangID)
+        {
+            List<bildungsgang> bildungsgangs = getBildungsgang();
+            foreach (bildungsgang bildungsgang in bildungsgangs)
+            {
+                if (bildungsgang.BildungsgangID == bildungsgangID) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Überprüft, ob ein Bildungsgang mit der angegebenen Bezeichnung existiert.
+        /// </summary>
+        /// <param name="bezeichnung">Die Bezeichnung des Bildungsgangs.</param>
+        /// <returns>True, wenn der Bildungsgang existiert, andernfalls false.</returns>
+        public bool existBildungsgang(string bezeichnung)
+        {
+            List<bildungsgang> bildungsgangs = getBildungsgang();
+            foreach (bildungsgang bildungsgang in bildungsgangs)
+            {
+                if (bildungsgang.Bezeichnung == bezeichnung) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Erstellt einen neuen Bildungsgang in der Datenbank.
+        /// </summary>
+        /// <param name="bezeichnung">Die Bezeichnung des neuen Bildungsgangs.</param>
+        /// <returns>True, wenn der Bildungsgang erfolgreich erstellt wurde, andernfalls false.</returns>
+        public bool createBildungsgang(string bezeichnung)
+        {
+            if (existBildungsgang(bezeichnung)) return false;
+            string query = $@"INSERT INTO `bildungsgang`(`Bezeichnung`) VALUES ('{bezeichnung}')";
+            db.ExecuteQuery(query);
+            return true;
+        }
+
+        /// <summary>
+        /// Löscht einen Bildungsgang aus der Datenbank.
+        /// </summary>
+        /// <param name="bildungsgangID">Die ID des Bildungsgangs, der gelöscht werden soll.</param>
+        /// <returns>True, wenn der Bildungsgang erfolgreich gelöscht wurde, andernfalls false.</returns>
+        public bool deleteBildungsgang(int bildungsgangID)
+        {
+            if (!existBildungsgang(bildungsgangID)) return false;
+            string query = $@"DELETE FROM `bildungsgang` WHERE `BildungsgangID` = '{bildungsgangID}'";
+            db.ExecuteQuery(query);
+            return true;
+        }
+
+        #endregion
+
+        #region zeitspanne
+
+        /// <summary>
+        /// Ruft eine Liste aller Zeitspannen aus der Datenbank ab.
+        /// </summary>
+        /// <returns>Eine Liste von Zeitspanne-Objekten oder null, wenn keine Daten gefunden wurden.</returns>
+        public List<Zeitspanne> GetZeitspannes()
+        {
+            DataTable dataTable = db.TableToDataTable("zeitspanne");
+            List<Zeitspanne> zeitspannes = new List<Zeitspanne>();
+            if (dataTable == null)
+            {
+                return null;
+            }
+
+            if (dataTable.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int wochentagID = Convert.ToInt32(row["WTID"]);
+                int schuelerID = Convert.ToInt32(row["SID"]);
+                string start = row["Start"].ToString();
+                string ende = row["Ende"].ToString();
+
+                Zeitspanne zeitspanne = new Zeitspanne(wochentagID, schuelerID, Convert.ToInt32(start), Convert.ToInt32(ende));
+
+
+                zeitspannes.Add(zeitspanne);
+            }
+
+            return zeitspannes;
+
+        }
+
+        /// <summary>
+        /// Überprüft, ob eine Zeitspanne mit den angegebenen Parametern existiert.
+        /// </summary>
+        /// <param name="wochentagID">Die ID des Wochentags.</param>
+        /// <param name="schuelerID">Die ID des Schülers.</param>
+        /// <param name="start">Die Startzeit der Zeitspanne.</param>
+        /// <param name="end">Die Endzeit der Zeitspanne.</param>
+        /// <returns>True, wenn die Zeitspanne existiert, andernfalls false.</returns>
+        public bool existZeitspanne(int wochentagID, int schuelerID , int start , int end)
+        {
+            List<Zeitspanne> zeitspannes = GetZeitspannes();
+            foreach (Zeitspanne zeitspanne in zeitspannes)
+            {
+                if (zeitspanne.WochentagID == wochentagID && zeitspanne.SchuelerID == schuelerID && zeitspanne.Startzeit == start && zeitspanne.Endzeit == end ) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Erstellt eine neue Zeitspanne in der Datenbank.
+        /// </summary>
+        /// <param name="wochentagID">Die ID des Wochentags.</param>
+        /// <param name="schuelerID">Die ID des Schülers.</param>
+        /// <param name="start">Die Startzeit der Zeitspanne.</param>
+        /// <param name="ende">Die Endzeit der Zeitspanne.</param>
+        /// <returns>True, wenn die Zeitspanne erfolgreich erstellt wurde, andernfalls false.</returns>
+        public bool createZeitspanne(int wochentagID, int schuelerID, int start, int ende)
+        {
+            if (existZeitspanne(wochentagID, schuelerID)) return false;
+            string query = $@"INSERT INTO `zeitspanne`(`WTID`, `SID`, `Start`, `Ende`) VALUES ('{wochentagID}','{schuelerID}','{start}','{ende}')";
+            db.ExecuteQuery(query);
+            return true;
+        }
+
+        /// <summary>
+        /// Ruft eine Liste aller Zeitspannen eines bestimmten Schülers aus der Datenbank ab.
+        /// </summary>
+        /// <param name="schuelerID">Die ID des Schülers.</param>
+        /// <returns>Eine Liste von Zeitspanne-Objekten.</returns>
+        public List<Zeitspanne> getZeitspaneebySchueler(int schuelerID)
+        {
+            List<Zeitspanne> zeitspannes = GetZeitspannes();
+           
+            foreach (Zeitspanne zeitspanne in zeitspannes)
+            {
+               
+                if (zeitspanne.SchuelerID != schuelerID)
+                {
+                    zeitspannes.Remove(zeitspanne);
+                }
+
+
+            }
+            return zeitspannes;
+        }
+
+        /// <summary>
+        /// Löscht eine Zeitspanne aus der Datenbank.
+        /// </summary>
+        /// <param name="wochentagID">Die ID des Wochentags.</param>
+        /// <param name="schuelerID">Die ID des Schülers.</param>
+        /// <param name="start">Die Startzeit der Zeitspanne.</param>
+        /// <param name="ende">Die Endzeit der Zeitspanne.</param>
+        /// <returns>True, wenn die Zeitspanne erfolgreich gelöscht wurde, andernfalls false.</returns
+        public bool deleteZeitspanne(int wochentagID, int schuelerID, int start, int ende)
+        {
+            if (!existZeitspanne(wochentagID, schuelerID, start, ende)) return false;
+            string query = $@"DELETE FROM `zeitspanne` WHERE `WTID` = '{wochentagID}' AND `SID` = '{schuelerID}' AND `Start` = '{start}' AND `Ende` = '{ende}'";
+            db.ExecuteQuery(query);
+            return true;
+        }
+
+
+        #endregion
+
+
+
+
+
     }
 }
