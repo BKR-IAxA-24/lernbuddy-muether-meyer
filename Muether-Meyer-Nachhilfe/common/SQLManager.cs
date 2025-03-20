@@ -300,7 +300,7 @@ FROM
             List<Klasse> klassen = getKlassen();
             foreach (Klasse klasse in klassen)
             {
-                if (klasse.Equals(name)) return true;
+                if (klasse.Bezeichnung == name) return true;
             }
             return false;
 
