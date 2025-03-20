@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Muether_Meyer_Nachhilfe
+namespace Muether_Meyer_Nachhilfe.common
 {
     internal class Nachhilfegesuch
     {
@@ -62,6 +62,15 @@ namespace Muether_Meyer_Nachhilfe
         }
 
 
+        public Nachhilfegesuch(int gesuchID, int schuelerID, int fachID, string beschreibung, long timestamp, Status status)
+        {
+            this.gesuchID = gesuchID;
+            this.schuelerID = schuelerID;
+            this.fachID = fachID;
+            this.beschreibung = beschreibung;
+            this.timestamp = timestamp;
+            this.status = status;
+        }
 
     }
 }
