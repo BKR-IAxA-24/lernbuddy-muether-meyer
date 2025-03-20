@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Muether_Meyer_Nachhilfe.common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ namespace Muether_Meyer_Nachhilfe.Pages
     /// </summary>
     public partial class Dashboard : Window
     {
+        SQLManager db = new SQLManager();
         public Dashboard()
         {
             InitializeComponent();
