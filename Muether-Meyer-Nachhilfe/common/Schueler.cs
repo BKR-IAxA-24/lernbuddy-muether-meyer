@@ -62,7 +62,7 @@ namespace Muether_Meyer_Nachhilfe.common
 
 
         //Konstruktor 
-        public Schueler(int schuelerID, string vorname, string nachname, Genders geschlecht, int bildungsgangID, int klassenID, string email)
+        public Schueler(int schuelerID, string vorname, string nachname, Genders geschlecht,  int klassenID, string email)
         {
             SchuelerID = schuelerID;
             Vorname = vorname;

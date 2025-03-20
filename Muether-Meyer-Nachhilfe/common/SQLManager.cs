@@ -502,9 +502,8 @@ namespace Muether_Meyer_Nachhilfe.common
                 Schueler.Genders genders = (Schueler.Genders)Enum.Parse(typeof(Schueler.Genders), row["Geschlecht"].ToString());
                 string email = row["EMail"].ToString();
                 int klasseID = Convert.ToInt32(row["KlassenID"]);
-                int bildungsgangID = Convert.ToInt32(row["BildungsgangID"]);
 
-                Schueler schueler = new Schueler(schuelerID, vorname, nachname, genders, bildungsgangID, klasseID, email);
+                Schueler schueler = new Schueler(schuelerID, vorname, nachname, genders, klasseID, email);
 
                 schuelers.Add(schueler);
             }
@@ -688,7 +687,7 @@ namespace Muether_Meyer_Nachhilfe.common
             }
             foreach (DataRow row in dataTable.Rows)
             {
-                int bildungsgangID = Convert.ToInt32(row["bildungsgang"]);
+                int bildungsgangID = Convert.ToInt32(row["BildungsgangID"]);
                 string bezeichnung = row["Bezeichnung"].ToString();
                 bildungsgang bildungsgang = new bildungsgang(bildungsgangID, bezeichnung);
                 bildungsgangs.Add(bildungsgang);
