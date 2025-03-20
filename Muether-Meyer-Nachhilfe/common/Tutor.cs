@@ -74,6 +74,18 @@ namespace Muether_Meyer_Nachhilfe.common
 
 		public int LoginID { get => loginID; set => loginID = value; }
 
+        public Tutor()
+        {
+        }
+
+        public Tutor(int tutorID, int schuelerID, bool genehmigt, int loginID)
+        {
+            this.tutorID = tutorID;
+            this.schuelerID = schuelerID;
+            this.genehmigt = getGenehmigtFromBool(genehmigt);
+            this.loginID = loginID;
+        }
+
 
     }
 }
