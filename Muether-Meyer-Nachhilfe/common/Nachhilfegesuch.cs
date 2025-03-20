@@ -48,7 +48,16 @@ namespace Muether_Meyer_Nachhilfe.common
 
 
         private Status status;
-
+        public DateTime dateTime
+        {
+            get => erstellt();
+            set { dateTime = value; }
+        }
+        public string CreatedAt
+        {
+            get => dateTime.ToString();
+            set { CreatedAt = value; }
+        }
         public Status GesuchStatus
         {
             get { return status; }
@@ -71,6 +80,13 @@ namespace Muether_Meyer_Nachhilfe.common
             this.timestamp = timestamp;
             this.status = status;
         }
-
+        private DateTime erstellt()
+        {
+            DateTimeOffset dateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(timestamp);
+            DateTime dateTime = dateTimeOffset.DateTime;
+            TimeZoneInfo tzi = TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time");
+            DateTime createdat = TimeZoneInfo.ConvertTime(dateTime, tzi);
+            return createdat;
+        }
     }
 }

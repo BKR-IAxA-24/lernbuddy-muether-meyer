@@ -819,7 +819,7 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <returns>True, wenn die Zeitspanne erfolgreich erstellt wurde, andernfalls false.</returns>
         public bool createZeitspanne(int wochentagID, int schuelerID, int start, int ende)
         {
-            if (existZeitspanne(wochentagID, schuelerID)) return false;
+            if (existZeitspanne(wochentagID, schuelerID,  start,  ende)) return false;
             string query = $@"INSERT INTO `zeitspanne`(`WTID`, `SID`, `Start`, `Ende`) VALUES ('{wochentagID}','{schuelerID}','{start}','{ende}')";
             db.ExecuteQuery(query);
             return true;

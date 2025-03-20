@@ -7,31 +7,26 @@
         mc:Ignorable="d"
         Title="Dashboard" WindowStyle="None"
         WindowState="Maximized"
-        ResizeMode="NoResize"
-        >
+        ResizeMode="NoResize">
     <Grid>
-        <DataGrid x:Name="dataOutput" AutoGenerateColumns="False" Margin="10,10,10,10" FontSize="60" GridLinesVisibility="All">
+        <DataGrid x:Name="dataOutput" AutoGenerateColumns="False" Margin="10,10,10,10" FontSize="30" GridLinesVisibility="All"
+                  AlternatingRowBackground="#CCC" RowBackground="#FFF">
             <DataGrid.Resources>
+                <Style TargetType="DataGrid">
+                    <Setter Property="Background" Value="White"/>
+                </Style>
                 <Style TargetType="DataGridCell">
                     <Setter Property="BorderThickness" Value="0,0,2,2"/>
                     <Setter Property="BorderBrush" Value="Black"/>
-                    <Style.Triggers>
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="0">
-                            <Setter Property="Background" Value="Gray"/>
-                        </Trigger>
-                        <Trigger Property="ItemsControl.AlternationIndex" Value="1">
-                            <Setter Property="Background" Value="LightBlue"/>
-                        </Trigger>
-                    </Style.Triggers>
                 </Style>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="BorderBrush" Value="Black"/>
                     <Setter Property="BorderThickness" Value="0,0,2,2"/>
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                    
                 </Style>
                 <Style x:Key="CenterAlignedTextStyle" TargetType="TextBlock">
                     <Setter Property="TextAlignment" Value="Center"/>
+                    <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
