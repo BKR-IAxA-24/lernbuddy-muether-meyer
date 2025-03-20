@@ -117,19 +117,21 @@ namespace Muether_Meyer_Nachhilfe.common
             string pepperHashedPassword = toHash($"{pUserPassword}-*{PEPPER}");
 
             // Der Benutzer wird in die Login-Tabelle eingefügt
+            // KORRIGIERT: admin ohne Anführungszeichen, da es ein numerischer Wert ist
             string insertRow = $@"
-    INSERT INTO login (EMail, Passwort, admin, salt)
-    SELECT
-        '{pUserName}',
-        SHA2(CONCAT('{pepperHashedPassword}', s.salt), 256),
-        '{admin}',
-        s.salt
-    FROM
-        (SELECT FLOOR(RAND() * 10000000) AS salt) AS s;
-    ";
+INSERT INTO login (EMail, Passwort, admin, salt)
+SELECT
+    '{pUserName}',
+    SHA2(CONCAT('{pepperHashedPassword}', s.salt), 256),
+    {admin},
+    s.salt
+FROM
+    (SELECT FLOOR(RAND() * 10000000) AS salt) AS s;
+";
 
             db.ExecuteQuery(insertRow);
         }
+
 
         #endregion
 
@@ -553,13 +555,15 @@ namespace Muether_Meyer_Nachhilfe.common
         public bool createSchueler(string vorname, string nachname, Schueler.Genders genders, string email, int klasseID)
         {
             if (existSchueler(email)) return false;
-            string query = $@"INSERT INTO `schueler`(`Vorname`, `Nachname`, `Geschlecht`, `EMail`, `KlassenID`) VALUES ('{vorname}','{nachname},'{email},'{klasseID}')";
+
+            // KORRIGIERT: Fehlerhafte Anführungszeichen und fehlende Kommata zwischen den Werten
+            string query = $@"INSERT INTO `schueler`(`Vorname`, `Nachname`, `Geschlecht`, `EMail`, `KlassenID`) 
+                     VALUES ('{vorname}', '{nachname}', '{genders}', '{email}', {klasseID})";
+
             db.ExecuteQuery(query);
             return true;
-
-
         }
-        
+
         /// <summary>
         /// Löscht einen Schüler aus der Datenbank.
         /// </summary>
@@ -629,10 +633,14 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <param name="schuelerID">Die ID des Schülers.</param>
         /// <param name="genehmigt">Gibt an, ob der Tutor genehmigt ist.</param>
         /// <param name="loginID">Die ID des Logins.</param>
-        public void createTutor(int tutorID , int schuelerID , bool genehmigt , int loginID)
+        public void createTutor(int tutorID, int schuelerID, bool genehmigt, int loginID)
         {
             int genehmigtInt = genehmigt ? 1 : 0;
-            string query = $@"INSERT INTO `tutor`(`TutorID`, `SchuelerID`, `Genehmigt`, `LoginID`) VALUES ('{tutorID} ','{schuelerID}','{genehmigt}','{loginID}'";
+
+            // KORRIGIERT: Fehlendes Anführungszeichen am Ende und numerische Werte ohne Anführungszeichen
+            string query = $@"INSERT INTO `tutor`(`TutorID`, `SchuelerID`, `Genehmigt`, `LoginID`) 
+                             VALUES ({tutorID}, {schuelerID}, {genehmigtInt}, {loginID})";
+
             db.ExecuteQuery(query);
         }
 
