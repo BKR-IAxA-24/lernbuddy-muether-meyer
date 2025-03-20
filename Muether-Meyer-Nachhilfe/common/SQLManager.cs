@@ -13,12 +13,12 @@ namespace Muether_Meyer_Nachhilfe.common
 {
     internal class SQLManager
     {
-        private DBase db;
+        private Dbase db;
         private string PEPPER = "dsakldsakjdsakdsakjdsakjdsakjdsalkjdslkjdsalkjdsalkj";
 
         public SQLManager()
         {
-            db = new DBase("localhost", "nachhilfedb", "root", "");
+            db = new Dbase("localhost", "nachhilfedb", "root", "");
         }
         public DataTable getStudents(string table)
         {
