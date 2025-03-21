@@ -53,7 +53,7 @@
                 <DataGridTemplateColumn Header="Details" Width="Auto">
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
-                            <Button Content="Anfragen" Click="DetailsButton_Click" Margin="5"/>
+                            <Button Content="Details" Click="DetailsButton_Click" Margin="5"/>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
