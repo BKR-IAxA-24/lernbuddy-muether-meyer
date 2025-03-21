@@ -20,8 +20,8 @@
                     <DataGridTemplateColumn.CellTemplate>
                         <DataTemplate>
                             <StackPanel Orientation="Horizontal">
-                                <Button Content="Genehmigen" Margin="5"/>
-                                <Button Content="Löschen" Margin="5"/>
+                                <Button Content="Genehmigen" Margin="5" Click="btnGenehmigt_Click"/>
+                                <Button Content="Löschen" Margin="5" Click="btnLöschen_Click"/>
                             </StackPanel>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

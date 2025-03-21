@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Muether_Meyer_Nachhilfe.common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,17 +18,35 @@ namespace Muether_Meyer_Nachhilfe.Pages
     /// <summary>
     /// Interaktionslogik für tutorpanel.xaml
     /// </summary>
+    
+    
     public partial class tutorpanel : Window
     {
-        public tutorpanel()
+        // Add a property to track admin status
+        SQLManager db = new SQLManager();
+        private bool IsAdmin { get; set; }
+
+        public tutorpanel(bool pIsAdmin)
         {
             InitializeComponent();
+
+            // Check admin status from database
+            CheckAdminStatus(pIsAdmin);
+
+            // Initialize the dashboard
             MainFrame.Navigate(new tutorDash());
         }
+
+        private void CheckAdminStatus(bool pIsAdmin)
+        {
+            IsAdmin = pIsAdmin;
+            lblUserRole.Content = IsAdmin ? "Admin" : "Tutor";
+            AdminSection.Visibility = IsAdmin ? Visibility.Visible : Visibility.Collapsed;
+        }
+
         private void NavigateToPage(object sender, RoutedEventArgs e)
         {
             Button button = sender as Button;
-
             if (button != null)
             {
                 switch (button.Content.ToString())
@@ -35,7 +54,6 @@ namespace Muether_Meyer_Nachhilfe.Pages
                     case "Schüler verwalten":
                         MainFrame.Navigate(new SchuelerVerwaltung());
                         break;
-
                     case "Tutoren verwalten":
                         MainFrame.Navigate(new TutorVerwaltung());
                         break;
@@ -63,5 +81,5 @@ namespace Muether_Meyer_Nachhilfe.Pages
                 textBox.Text = "Suche...";
             }
         }
-    }
+}
 }
