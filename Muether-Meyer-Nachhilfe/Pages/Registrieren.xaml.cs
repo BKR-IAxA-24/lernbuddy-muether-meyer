@@ -136,17 +136,17 @@ namespace Muether_Meyer_Nachhilfe.Pages
 
             try
             {
-                // Prüfen, ob E-Mail bereits existiert
+              
                 if (sqlmanager.existSchueler(txtEmail.Text))
                 {
                     MessageBox.Show("Diese E-Mail-Adresse ist bereits registriert.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
 
-                // Benutzer erstellen
+                
                 sqlmanager.createUserDB(txtEmail.Text, txtPasswort.Password, false);
 
-                // Schüler erstellen - Wir holen zuerst die Klassen-ID basierend auf dem Namen
+           
                 int klassenID = 0;
                 var klassen = sqlmanager.getKlassen();
                 foreach (var klasse in klassen)
@@ -158,7 +158,7 @@ namespace Muether_Meyer_Nachhilfe.Pages
                     }
                 }
 
-                // Wenn die Klasse nicht existiert, erstellen wir eine neue mit Bildungsgang-ID 1 (Standard)
+               
                 if (klassenID == 0)
                 {
                     sqlmanager.createKlasse(txtKlasse.Text, 1);
@@ -175,11 +175,33 @@ namespace Muether_Meyer_Nachhilfe.Pages
                     }
                 }
 
-                // Schüler erstellen
+                
                 Schueler.Genders geschlecht = (Schueler.Genders)cmbGeschlecht.SelectedItem;
-                sqlmanager.createSchueler(txtVorname.Text, txtNachname.Text, geschlecht, txtEmail.Text, klassenID);
+                if (!sqlmanager.createSchueler(txtVorname.Text, txtNachname.Text, geschlecht, txtEmail.Text, klassenID))
+                {
+                    MessageBox.Show("Bei der Registrierung ist ein Fehler aufgetreten.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
 
-                // Fach-Zuordnungen erstellen
+
+                
+                Schueler schueler = sqlmanager.getSchueler(txtEmail.Text);
+
+                if (schueler == null)
+                {
+                    MessageBox.Show("Bei der Registrierung ist ein Fehler aufgetreten.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                LoginDB loginDB = sqlmanager.getLogin(schueler.Email);
+                if (loginDB == null)
+                {
+                    MessageBox.Show("Bei der Registrierung ist ein Fehler aufgetreten.", "Fehler", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+
+                sqlmanager.createTutor(schueler.SchuelerID , false , loginDB.LoginID );
+
                 foreach (var selectedItem in lstFachAuswahl.SelectedItems)
                 {
                     string fachBezeichnung = selectedItem.ToString();
@@ -198,8 +220,7 @@ namespace Muether_Meyer_Nachhilfe.Pages
 
                     if (fachID != 0)
                     {
-                        // Hier könnte man noch lehrerhatfach oder andere Zuordnungen erstellen
-                        // Je nachdem wie die Anwendung aufgebaut ist
+                       
                     }
                 }
 
