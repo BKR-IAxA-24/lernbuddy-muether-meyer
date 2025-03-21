@@ -30,35 +30,69 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <param tag="pEmail"></param>
         /// <param tag="pUserPassword"></param>
         /// <returns></returns>
-        public bool loginToDB(string pEmail, string pUserPassword)
-        {
+       
+           public bool loginToDB(string pEmail, string pUserPassword)
+            {
             // Das Klartext-Passwort wird mit dem Pepper gehashed
             string pepperHashedPassword = toHash($"{pUserPassword}-*{PEPPER}");
 
             // SQL-Abfrage für die Login-Prüfung
             string query = $@"
-        SELECT (SHA2(CONCAT('{pepperHashedPassword}', u.salt), 256) = u.Passwort) AS result
-        FROM login AS u
-        where u.EMail = '{pEmail}';
-        ";
+    SELECT u.admin, (SHA2(CONCAT('{pepperHashedPassword}', u.salt), 256) = u.Passwort) AS result
+    FROM login AS u
+    WHERE u.EMail = '{pEmail}';
+    ";
 
             try
             {
                 // SQL-Abfrage ausführen und Ergebnis abrufen
                 DataTable resultTable = db.QueryToDataTable(query);
 
-                //setzt den Tinyint in die Variable result
-                string result = resultTable.Rows[0]["result"].ToString();
-
-                //prüft ob es gleich 1 ist
-                if (result == "1")
+                if (resultTable.Rows.Count == 0)
                 {
-                    return true; // Anmeldung erfolgreich
+                    return false; // Benutzer existiert nicht
                 }
-                else
-                    if (result == "2")
+
+                // Admin-Status und Passwort-Überprüfungsergebnis abrufen
+                bool isAdmin = Convert.ToBoolean(resultTable.Rows[0]["admin"]);
+                bool passwordCorrect = Convert.ToBoolean(resultTable.Rows[0]["result"]);
+
+                if (passwordCorrect)
                 {
-                    return false; // Anmeldung fehlgeschlagen
+                    if (isAdmin)
+                    {
+                        return true; // Admin-Anmeldung erfolgreich
+                    }
+                    else
+                    {
+                        // Überprüfen, ob der Benutzer als Tutor genehmigt wurde
+                        string tutorQuery = $@"
+                SELECT t.Genehmigt
+                FROM tutor AS t
+                JOIN login AS l ON t.LoginID = l.LoginID
+                WHERE l.EMail = '{pEmail}';
+                ";
+
+                        DataTable tutorResultTable = db.QueryToDataTable(tutorQuery);
+
+                        if (tutorResultTable.Rows.Count == 0)
+                        {
+                            return false; // Benutzer ist kein Tutor
+                        }
+
+                        bool isApprovedTutor = Convert.ToBoolean(tutorResultTable.Rows[0]["Genehmigt"]);
+                       
+                        if (isApprovedTutor)
+                        {
+                            
+                            return true; // Genehmigter Tutor-Anmeldung erfolgreich
+                        }
+                        else
+                        {
+                            
+                            return false; // Tutor nicht genehmigt
+                        }
+                    }
                 }
             }
             catch (Exception ex)
