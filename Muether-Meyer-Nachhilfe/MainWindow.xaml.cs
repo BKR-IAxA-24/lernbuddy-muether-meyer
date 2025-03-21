@@ -126,6 +126,54 @@ namespace Muether_Meyer_Nachhilfe
 
         private void btnSend_Click(object sender, RoutedEventArgs e)
         {
+
+            // Check if all required fields are filled 
+            if (string.IsNullOrWhiteSpace(txtFirstName.Text) || string.IsNullOrWhiteSpace(txtLastName.Text) || string.IsNullOrWhiteSpace(txtEMail.Text) || string.IsNullOrWhiteSpace(txtClass.Text))
+            {
+                MessageBox.Show("Bitte füllen Sie alle Pflichtfelder aus.");
+                return;
+            }
+
+            //wenn ein tag mit mindestens einer uhrzeit gefüllt ist, dann muss auch die andere uhrzeit gefüllt sein und umgekehrt und mindestens ein tag muss gefüllt sein
+            bool filled = false;
+            foreach (var tag in WochentageListe)
+            {
+
+
+
+                if (!string.IsNullOrWhiteSpace(tag.Startzeit) && !string.IsNullOrWhiteSpace(tag.Endzeit))
+                {
+
+                    try
+                    {
+                        //check if the start time is before the end time and if the time is in the correct format 0000-2359  
+                        if (int.Parse(tag.Startzeit) >= int.Parse(tag.Endzeit) || int.Parse(tag.Startzeit) < 0 || int.Parse(tag.Startzeit) > 2359 || int.Parse(tag.Endzeit) < 0 || int.Parse(tag.Endzeit) > 2359)
+                        {
+                            MessageBox.Show("Bitte geben Sie eine gültige Uhrzeit ein.");
+                            return;
+                        }
+                    }
+                    catch (FormatException)
+                    {
+                        MessageBox.Show("Bitte geben Sie die Uhrzeit im Format HHMM ein.");
+                        return;
+                    }
+
+
+                    filled = true;
+                    break;
+                }
+            }
+
+            if (!filled)
+            {
+                MessageBox.Show("Bitte füllen Sie mindestens einen Tag mit einer Uhrzeit aus.");
+                return;
+            }
+
+
+           
+
             #region check schüler
             //generate a random number 1-5
             Random rnd = new Random();
@@ -213,9 +261,8 @@ namespace Muether_Meyer_Nachhilfe
             // Loop through the DataGrid items and save time slots
             foreach (WochentagViewModel tag in WochentageListe)
             {
-                // Skip if either start or end time is not set
-                if (string.IsNullOrWhiteSpace(tag.Startzeit) || string.IsNullOrWhiteSpace(tag.Endzeit))
-                    continue;
+                
+             
 
                 // Find the weekday ID
                 var wochentagID = 0;
@@ -230,12 +277,37 @@ namespace Muether_Meyer_Nachhilfe
 
                 if (wochentagID != 0)
                 {
+
+                    //wenn tag uhrzeit hat, dann speichere die uhrzeit in der datenbank sonst nicht 
+                    if (tag.Startzeit == "" || tag.Endzeit == "")
+                    {
+                        continue;
+                    }
+
                     // Create time slot
                     sqlmanager.createZeitspanne(wochentagID, sID, int.Parse(tag.Startzeit), int.Parse(tag.Endzeit));
                 }
             }
 
             MessageBox.Show("Nachhilfegesuch erfolgreich aufgegeben!");
+
+            // Clear all fields
+            txtFirstName.Text = "";
+            txtLastName.Text = "";
+            txtEMail.Text = "";
+            txtClass.Text = "";
+            cmbGeschlecht.SelectedItem = null;
+            lstFachAuswahl.SelectedItems.Clear();
+            txtDescription.Text = "";
+            foreach (var tag in WochentageListe)
+            {
+                tag.Startzeit = "";
+                tag.Endzeit = "";
+            }
+
+
+
+
             #endregion
         }
 
