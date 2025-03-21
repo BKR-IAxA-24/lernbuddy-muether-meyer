@@ -10,6 +10,25 @@
 
     <Grid>
         <DataGrid x:Name="dataOutput" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Resources>
+                <Style TargetType="DataGrid">
+                    <Setter Property="Background" Value="White"/>
+                </Style>
+                <Style TargetType="DataGridCell">
+                    <Setter Property="BorderThickness" Value="0,0,2,2"/>
+                    <Setter Property="BorderBrush" Value="Black"/>
+
+                </Style>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="BorderBrush" Value="Black"/>
+                    <Setter Property="BorderThickness" Value="0,0,2,2"/>
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </Style>
+                <Style x:Key="CenterAlignedTextStyle" TargetType="TextBlock">
+                    <Setter Property="TextAlignment" Value="Center"/>
+                    <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+                </Style>
+            </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Fach" Binding="{Binding Fach}" Width="*" 
                      ElementStyle="{StaticResource CenterAlignedTextStyle}" 

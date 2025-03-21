@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Muether_Meyer_Nachhilfe.Pages"
         mc:Ignorable="d"
-        Title="tutorpanel" Height="450" Width="800">
+        Title="tutorpanel" Height="450" Width="800"
+        WindowState="Maximized">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="220"/>

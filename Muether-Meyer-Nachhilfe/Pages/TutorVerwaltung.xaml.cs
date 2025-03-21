@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Muether_Meyer_Nachhilfe.common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +21,28 @@ namespace Muether_Meyer_Nachhilfe.Pages
     /// </summary>
     public partial class TutorVerwaltung : Page
     {
+        SQLManager db = new SQLManager();
         public TutorVerwaltung()
         {
             InitializeComponent();
+            
+            List<Nachhilfegesuch> nachhilfegesuches = db.getNachhilfegesuches("offen");
+            List<Fach> fachs = db.getFaecher();
+            List<bildungsgang> bildungsgangs = db.getBildungsgang();
+            List<Klasse> klassen = db.getKlassen();
+            List<Schueler> schueler = db.getSchueler();
+
+            var combinedData = from s in schueler
+                               join k in klassen on s.KlassenID equals k.KlassenID
+                               join bg in bildungsgangs on k.BildungsgangID equals bg.BildungsgangID
+                               select new
+                               {
+                                   FirstName = s.Vorname,
+                                   LastName = s.Nachname,
+                                   Class = k.Bezeichnung
+                               };
+
+            dataOutput.ItemsSource = combinedData.ToList();
         }
     }
 }
