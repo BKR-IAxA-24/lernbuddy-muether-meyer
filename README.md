@@ -31,7 +31,7 @@ Das Projekt dient als Verwaltungssystem für Nachhilfesuchende. Es ermöglicht:
   Passwörter werden mit SHA-256 zusammen mit einem festen "Pepper" gehashed, um die Sicherheit zu erhöhen.
 
 ## Storyboard
-[Storyboard](https://terra.ipmake.me/s/7J28WbQxT6K6yry)
+[Storyboard](https://terra.ipmake.me/s/Mynw4Zd5fEct8J7)
 
 ## UseCase
 [UseCase](https://terra.ipmake.me/s/jDGFk5n77fx2kEg)
