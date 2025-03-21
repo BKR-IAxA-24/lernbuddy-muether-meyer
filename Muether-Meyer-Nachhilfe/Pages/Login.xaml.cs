@@ -39,8 +39,12 @@ namespace Muether_Meyer_Nachhilfe.Pages
               
                 if (sqlmanager.loginToDB(txtEmail.Text, txtPassword.Password))
                 {
-                   MessageBox.Show("Erfolgreich eingeloggt!");
-                
+                    tutorpanel t = new tutorpanel();
+                    t.Show();
+                    //close the login window
+                    this.Close();
+
+
                 }
                 else
                 {

@@ -1,0 +1,38 @@
+﻿<Page x:Class="Muether_Meyer_Nachhilfe.Pages.SchuelerVerwaltung"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:Muether_Meyer_Nachhilfe.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="SchuelerVerwaltung">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Text="Schüler verwalten" FontSize="20" Margin="0,0,0,10"/>
+
+        <DataGrid x:Name="dataOutput" Grid.Row="1" AutoGenerateColumns="False" IsReadOnly="True">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Vorname" Binding="{Binding FirstName}" Width="120"/>
+                <DataGridTextColumn Header="Nachname" Binding="{Binding LastName}" Width="120"/>
+                <DataGridTextColumn Header="Klasse" Binding="{Binding Class}" Width="80"/>
+                <DataGridTemplateColumn Header="Aktionen" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Bearbeiten" Margin="5"/>
+                                <Button Content="Details" Margin="5"/>
+                                <Button Content="Löschen" Margin="5"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </Grid>
+</Page>
