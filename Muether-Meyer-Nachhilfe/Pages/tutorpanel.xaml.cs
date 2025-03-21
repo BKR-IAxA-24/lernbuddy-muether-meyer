@@ -18,8 +18,8 @@ namespace Muether_Meyer_Nachhilfe.Pages
     /// <summary>
     /// Interaktionslogik für tutorpanel.xaml
     /// </summary>
-    
-    
+
+
     public partial class tutorpanel : Window
     {
         // Add a property to track admin status
@@ -81,5 +81,12 @@ namespace Muether_Meyer_Nachhilfe.Pages
                 textBox.Text = "Suche...";
             }
         }
-}
+        //btnLogout_Click
+        private void btnLogout_Click(object sender, RoutedEventArgs e)
+        {
+            Login login = new Login();
+            login.Show();
+            this.Close();
+        }
+    }
 }

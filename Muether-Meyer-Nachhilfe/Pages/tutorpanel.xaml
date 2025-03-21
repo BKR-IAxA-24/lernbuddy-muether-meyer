@@ -36,7 +36,7 @@
                     <Button Content="Nachhilfegesuch löschen" Margin="0,5,0,5" Padding="5" Click="NavigateToPage"/>
                 </StackPanel>
 
-                <Button Content="Logout" Margin="0,15,0,5" Padding="5" Background="#f0f0f0"/>
+                <Button Content="Logout" Margin="0,15,0,5" Padding="5" Background="#f0f0f0" Click="btnLogout_Click"/>
             </StackPanel>
         </Border>
         <!-- Main Content Area with Search Bar -->
