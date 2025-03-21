@@ -6,6 +6,7 @@ Dieses Projekt ist eine WPF-Anwendung zur Verwaltung von Nachhilfegesuchen und B
 - [Überblick](#überblick)
 - [Features](#features)
 - [Storyboard](#storyboard)
+- [Use Case](#usecase)
 
 ## Überblick
 
@@ -30,8 +31,8 @@ Das Projekt dient als Verwaltungssystem für Nachhilfesuchende. Es ermöglicht:
   Passwörter werden mit SHA-256 zusammen mit einem festen "Pepper" gehashed, um die Sicherheit zu erhöhen.
 
 ## Storyboard
-
-Eine visuelle Darstellung der Benutzeroberfläche und des Ablaufs finden Sie in unserem Storyboard.  
 [Storyboard Link](https://terra.ipmake.me/s/7J28WbQxT6K6yry)
 
+## UseCase
+[UseCase](https://terra.ipmake.me/s/jDGFk5n77fx2kEg)
 
