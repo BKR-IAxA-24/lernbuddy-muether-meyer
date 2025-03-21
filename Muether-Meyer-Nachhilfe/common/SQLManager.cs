@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Data;
 using System.Windows.Documents;
 using System.Windows;
+using Muether_Meyer_Nachhilfe.Pages;
 namespace Muether_Meyer_Nachhilfe.common
 {
     internal class SQLManager
@@ -130,6 +131,53 @@ FROM
 ";
 
             db.ExecuteQuery(insertRow);
+        }
+
+        public List<LoginDB> getLogins()
+        {
+            List<LoginDB> logins = new List<LoginDB>();
+
+            DataTable dataTable = db.TableToDataTable("login");
+            if (dataTable == null)
+            {
+                return null;
+            }
+
+            if (dataTable.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int loginID = Convert.ToInt32(row["LoginID"]);
+                string email = row["EMail"].ToString();
+                int admin = Convert.ToInt32(row["admin"]);
+                LoginDB login = new LoginDB(loginID, email, admin);
+                logins.Add(login);
+            }
+            return logins;
+
+        }
+
+        public LoginDB getLogin(string email)
+        {
+            List<LoginDB> logins = getLogins();
+            foreach (LoginDB login in logins)
+            {
+                if (login.Email == email) return login;
+            }
+            return null;
+        }
+
+        public bool existLogin(string email)
+        {
+            List<LoginDB> logins = getLogins();
+            foreach (LoginDB login in logins)
+            {
+                if (login.Email == email) return true;
+            }
+            return false;
         }
 
 
@@ -513,6 +561,16 @@ FROM
             return schuelers;
         }
 
+        public Schueler getSchueler(string email)
+        {
+            List<Schueler> schuelers = getSchueler();
+            foreach (Schueler schueler in schuelers)
+            {
+                if (schueler.Email == email) return schueler;
+            }
+            return null;
+        }
+
         /// <summary>
         /// Überprüft, ob ein Schüler mit der angegebenen E-Mail-Adresse existiert.
         /// </summary>
@@ -633,13 +691,16 @@ FROM
         /// <param name="schuelerID">Die ID des Schülers.</param>
         /// <param name="genehmigt">Gibt an, ob der Tutor genehmigt ist.</param>
         /// <param name="loginID">Die ID des Logins.</param>
-        public void createTutor(int tutorID, int schuelerID, bool genehmigt, int loginID)
+        public void createTutor(int schuelerID, bool genehmigt, int loginID)
         {
             int genehmigtInt = genehmigt ? 1 : 0;
 
+            int count = getLogins().Count();
+
+
+
             // KORRIGIERT: Fehlendes Anführungszeichen am Ende und numerische Werte ohne Anführungszeichen
-            string query = $@"INSERT INTO `tutor`(`TutorID`, `SchuelerID`, `Genehmigt`, `LoginID`) 
-                             VALUES ({tutorID}, {schuelerID}, {genehmigtInt}, {loginID})";
+            string query = $@"INSERT INTO `tutor`(`TutorID`, `SchuelerID`, `Genehmigt`, `LoginID`) VALUES ('{count++}','{schuelerID}','{genehmigtInt}','{loginID}')";
 
             db.ExecuteQuery(query);
         }
