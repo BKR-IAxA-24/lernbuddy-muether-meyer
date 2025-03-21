@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Data;
 using System.Windows.Documents;
 using System.Windows;
+using Muether_Meyer_Nachhilfe.Pages;
 namespace Muether_Meyer_Nachhilfe.common
 {
     internal class SQLManager
@@ -26,38 +27,72 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Fügt einen neuen Benutzer in die Datenbank ein.
         /// </summary>
-        /// <param bezeichnung="pEmail"></param>
-        /// <param bezeichnung="pUserPassword"></param>
+        /// <param tag="pEmail"></param>
+        /// <param tag="pUserPassword"></param>
         /// <returns></returns>
-        public bool loginToDB(string pEmail, string pUserPassword)
-        {
+       
+           public bool loginToDB(string pEmail, string pUserPassword)
+            {
             // Das Klartext-Passwort wird mit dem Pepper gehashed
             string pepperHashedPassword = toHash($"{pUserPassword}-*{PEPPER}");
 
             // SQL-Abfrage für die Login-Prüfung
             string query = $@"
-        SELECT (SHA2(CONCAT('{pepperHashedPassword}', u.salt), 256) = u.Passwort) AS result
-        FROM login AS u
-        where u.EMail = '{pEmail}';
-        ";
+    SELECT u.admin, (SHA2(CONCAT('{pepperHashedPassword}', u.salt), 256) = u.Passwort) AS result
+    FROM login AS u
+    WHERE u.EMail = '{pEmail}';
+    ";
 
             try
             {
                 // SQL-Abfrage ausführen und Ergebnis abrufen
                 DataTable resultTable = db.QueryToDataTable(query);
 
-                //setzt den Tinyint in die Variable result
-                string result = resultTable.Rows[0]["result"].ToString();
-
-                //prüft ob es gleich 1 ist
-                if (result == "1")
+                if (resultTable.Rows.Count == 0)
                 {
-                    return true; // Anmeldung erfolgreich
+                    return false; // Benutzer existiert nicht
                 }
-                else
-                    if (result == "2")
+
+                // Admin-Status und Passwort-Überprüfungsergebnis abrufen
+                bool isAdmin = Convert.ToBoolean(resultTable.Rows[0]["admin"]);
+                bool passwordCorrect = Convert.ToBoolean(resultTable.Rows[0]["result"]);
+
+                if (passwordCorrect)
                 {
-                    return false; // Anmeldung fehlgeschlagen
+                    if (isAdmin)
+                    {
+                        return true; // Admin-Anmeldung erfolgreich
+                    }
+                    else
+                    {
+                        // Überprüfen, ob der Benutzer als Tutor genehmigt wurde
+                        string tutorQuery = $@"
+                SELECT t.Genehmigt
+                FROM tutor AS t
+                JOIN login AS l ON t.LoginID = l.LoginID
+                WHERE l.EMail = '{pEmail}';
+                ";
+
+                        DataTable tutorResultTable = db.QueryToDataTable(tutorQuery);
+
+                        if (tutorResultTable.Rows.Count == 0)
+                        {
+                            return false; // Benutzer ist kein Tutor
+                        }
+
+                        bool isApprovedTutor = Convert.ToBoolean(tutorResultTable.Rows[0]["Genehmigt"]);
+                       
+                        if (isApprovedTutor)
+                        {
+                            
+                            return true; // Genehmigter Tutor-Anmeldung erfolgreich
+                        }
+                        else
+                        {
+                            
+                            return false; // Tutor nicht genehmigt
+                        }
+                    }
                 }
             }
             catch (Exception ex)
@@ -70,7 +105,7 @@ namespace Muether_Meyer_Nachhilfe.common
 
         /// <summary>
         /// Hash-Funktion für Passwörter
-        /// <param bezeichnung="pKlartext">Klartext-Passwort</param>
+        /// <param tag="pKlartext">Klartext-Passwort</param>
         /// <returns></returns>
         /// </summary>
 
@@ -102,9 +137,9 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Erstellt einen neuen Benutzer in der Datenbank.
         /// </summary>
-        /// <param bezeichnung="pUserName">Der Benutzername (E-Mail) des neuen Benutzers.</param>
-        /// <param bezeichnung="pUserPassword">Das Passwort des neuen Benutzers im Klartext.</param>
-        /// <param bezeichnung="isAdmin">Gibt an, ob der neue Benutzer Administratorrechte hat.</param>
+        /// <param tag="pUserName">Der Benutzername (E-Mail) des neuen Benutzers.</param>
+        /// <param tag="pUserPassword">Das Passwort des neuen Benutzers im Klartext.</param>
+        /// <param tag="isAdmin">Gibt an, ob der neue Benutzer Administratorrechte hat.</param>
         public void createUserDB(string pUserName, string pUserPassword, bool isAdmin)
         {
             int admin = 0;
@@ -117,19 +152,68 @@ namespace Muether_Meyer_Nachhilfe.common
             string pepperHashedPassword = toHash($"{pUserPassword}-*{PEPPER}");
 
             // Der Benutzer wird in die Login-Tabelle eingefügt
+            // KORRIGIERT: admin ohne Anführungszeichen, da es ein numerischer Wert ist
             string insertRow = $@"
-    INSERT INTO login (EMail, Passwort, admin, salt)
-    SELECT
-        '{pUserName}',
-        SHA2(CONCAT('{pepperHashedPassword}', s.salt), 256),
-        '{admin}',
-        s.salt
-    FROM
-        (SELECT FLOOR(RAND() * 10000000) AS salt) AS s;
-    ";
+INSERT INTO login (EMail, Passwort, admin, salt)
+SELECT
+    '{pUserName}',
+    SHA2(CONCAT('{pepperHashedPassword}', s.salt), 256),
+    {admin},
+    s.salt
+FROM
+    (SELECT FLOOR(RAND() * 10000000) AS salt) AS s;
+";
 
             db.ExecuteQuery(insertRow);
         }
+
+        public List<LoginDB> getLogins()
+        {
+            List<LoginDB> logins = new List<LoginDB>();
+
+            DataTable dataTable = db.TableToDataTable("login");
+            if (dataTable == null)
+            {
+                return null;
+            }
+
+            if (dataTable.Rows.Count == 0)
+            {
+                return null;
+            }
+
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int loginID = Convert.ToInt32(row["LoginID"]);
+                string email = row["EMail"].ToString();
+                int admin = Convert.ToInt32(row["admin"]);
+                LoginDB login = new LoginDB(loginID, email, admin);
+                logins.Add(login);
+            }
+            return logins;
+
+        }
+
+        public LoginDB getLogin(string email)
+        {
+            List<LoginDB> logins = getLogins();
+            foreach (LoginDB login in logins)
+            {
+                if (login.Email == email) return login;
+            }
+            return null;
+        }
+
+        public bool existLogin(string email)
+        {
+            List<LoginDB> logins = getLogins();
+            foreach (LoginDB login in logins)
+            {
+                if (login.Email == email) return true;
+            }
+            return false;
+        }
+
 
         #endregion
 
@@ -157,7 +241,7 @@ namespace Muether_Meyer_Nachhilfe.common
             foreach (DataRow row in dataTable.Rows)
             {
                 int fachID = Convert.ToInt32(row["fachID"]);
-                string bezeichnung = row["bezeichnung"].ToString();
+                string bezeichnung = row["Bezeichnung"].ToString();
                 Fach fach = new Fach(fachID, bezeichnung);
                 faches.Add(fach);
             }
@@ -169,7 +253,7 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Überprüft, ob ein Fach mit dem angegebenen Namen existiert.
         /// </summary>
-        /// <param bezeichnung="name">Der Name des Faches.</param>
+        /// <param tag="name">Der Name des Faches.</param>
         /// <returns>True, wenn das Fach existiert, andernfalls false.</returns>
         public bool existFach(string bezeichnung)
         {
@@ -191,7 +275,7 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Überprüft, ob ein Fach mit der angegebenen Fach-ID existiert.
         /// </summary>
-        /// <param bezeichnung="fachID">Die ID des Faches.</param>
+        /// <param tag="fachID">Die ID des Faches.</param>
         /// <returns>True, wenn das Fach existiert, andernfalls false.</returns>
         public bool existFach(int fachID)
         {
@@ -290,7 +374,7 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Überprüft, ob eine Klasse mit dem angegebenen Namen existiert.
         /// </summary>
-        /// <param bezeichnung="name">Der Name der Klasse.</param>
+        /// <param tag="name">Der Name der Klasse.</param>
         /// <returns>True, wenn die Klasse existiert, andernfalls false.</returns>
         /// <return>False</return>
         public bool existKlasse(string name)
@@ -298,7 +382,7 @@ namespace Muether_Meyer_Nachhilfe.common
             List<Klasse> klassen = getKlassen();
             foreach (Klasse klasse in klassen)
             {
-                if (klasse.Equals(name)) return true;
+                if (klasse.Bezeichnung == name) return true;
             }
             return false;
 
@@ -307,7 +391,7 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Überprüft, ob eine Klasse mit der angegebenen Klassen-ID existiert.
         /// </summary>
-        /// <param bezeichnung="klasseID">Die ID der Klasse.</param>
+        /// <param tag="klasseID">Die ID der Klasse.</param>
         /// <returns>True, wenn die Klasse existiert, andernfalls false.</returns>
         public bool existKlasse(int klasseID)
         {
@@ -325,8 +409,8 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Erstellt eine neue Klasse in der Datenbank.
         /// </summary>
-        /// <param bezeichnung="name">Der Name der Klasse.</param>
-        /// <param bezeichnung="bildungsgangID">Die ID des Bildungsgangs.</param>
+        /// <param tag="name">Der Name der Klasse.</param>
+        /// <param tag="bildungsgangID">Die ID des Bildungsgangs.</param>
         /// <returns>True, wenn die Klasse erfolgreich erstellt wurde, andernfalls false.</returns>
         public bool createKlasse(string name, int bildungsgangID)
         {
@@ -358,13 +442,13 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Ruft eine Liste aller Nachhilfegesuche aus der Datenbank ab und filtert nach dem angegebenen Status.
         /// </summary>
-        /// <param bezeichnung="orderby">Der Status, nach dem gefiltert werden soll ("offen" oder "erledigt").</param>
+        /// <param tag="orderby">Der Status, nach dem gefiltert werden soll ("offen" oder "erledigt").</param>
         /// <returns>Eine Liste von Nachhilfegesuch-Objekten oder null, wenn keine Daten gefunden wurden.</returns>
         public List<Nachhilfegesuch> getNachhilfegesuches(string orderby)
         {
             List<Nachhilfegesuch> nachhilfegesuches = new List<Nachhilfegesuch>();
 
-            DataTable dataTable = db.TableToDataTable("nachhilfegesuch");
+            DataTable dataTable = db.QueryToDataTable("SELECT * FROM `nachhilfegesuch` ORDER BY `nachhilfegesuch`.`ErstelltAm` DESC ");
             if (dataTable == null)
             {
                 return null;
@@ -414,8 +498,8 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Überprüft, ob ein Nachhilfegesuch mit der angegebenen Schüler-ID und Fach-ID existiert.
         /// </summary>
-        /// <param bezeichnung="schuelerID">Die ID des Schülers.</param>
-        /// <param bezeichnung="fachID">Die ID des Faches.</param>
+        /// <param tag="schuelerID">Die ID des Schülers.</param>
+        /// <param tag="fachID">Die ID des Faches.</param>
         /// <returns>True, wenn das Nachhilfegesuch existiert, andernfalls false.</returns>
         public bool existNachhilfegesuch(int schuelerID, int fachID)
         {
@@ -446,9 +530,9 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Erstellt ein neues Nachhilfegesuch in der Datenbank.
         /// </summary>
-        /// <param bezeichnung="schuelerID">Die ID des Schülers.</param>
-        /// <param bezeichnung="fachID">Die ID des Faches.</param>
-        /// <param bezeichnung="beschreibung">Die Beschreibung des Nachhilfegesuchs.</param>
+        /// <param tag="schuelerID">Die ID des Schülers.</param>
+        /// <param tag="fachID">Die ID des Faches.</param>
+        /// <param tag="beschreibung">Die Beschreibung des Nachhilfegesuchs.</param>
         /// <returns>True, wenn das Nachhilfegesuch erfolgreich erstellt wurde.</returns>
         public bool createNachhilfegesucht(int schuelerID, int fachID, string beschreibung)
         {
@@ -464,7 +548,7 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <summary>
         /// Löscht ein Nachhilfegesuch aus der Datenbank.
         /// </summary>
-        /// <param bezeichnung="gesuchID">Die ID des Nachhilfegesuchs, das gelöscht werden soll.</param>
+        /// <param tag="gesuchID">Die ID des Nachhilfegesuchs, das gelöscht werden soll.</param>
         /// <returns>True, wenn das Nachhilfegesuch erfolgreich gelöscht wurde.</returns>
         public bool deleteNachhilfegesuch(int gesuchID)
         {
@@ -502,13 +586,23 @@ namespace Muether_Meyer_Nachhilfe.common
                 Schueler.Genders genders = (Schueler.Genders)Enum.Parse(typeof(Schueler.Genders), row["Geschlecht"].ToString());
                 string email = row["EMail"].ToString();
                 int klasseID = Convert.ToInt32(row["KlassenID"]);
-                int bildungsgangID = Convert.ToInt32(row["BildungsgangID"]);
+    
 
-                Schueler schueler = new Schueler(schuelerID, vorname, nachname, genders, bildungsgangID, klasseID, email);
+                Schueler schueler = new Schueler(schuelerID, vorname, nachname, genders, klasseID, email);
 
                 schuelers.Add(schueler);
             }
             return schuelers;
+        }
+
+        public Schueler getSchueler(string email)
+        {
+            List<Schueler> schuelers = getSchueler();
+            foreach (Schueler schueler in schuelers)
+            {
+                if (schueler.Email == email) return schueler;
+            }
+            return null;
         }
 
         /// <summary>
@@ -553,13 +647,15 @@ namespace Muether_Meyer_Nachhilfe.common
         public bool createSchueler(string vorname, string nachname, Schueler.Genders genders, string email, int klasseID)
         {
             if (existSchueler(email)) return false;
-            string query = $@"INSERT INTO `schueler`(`Vorname`, `Nachname`, `Geschlecht`, `EMail`, `KlassenID`) VALUES ('{vorname}','{nachname},'{email},'{klasseID}')";
+
+            // KORRIGIERT: Fehlerhafte Anführungszeichen und fehlende Kommata zwischen den Werten
+            string query = $@"INSERT INTO `schueler`(`Vorname`, `Nachname`, `Geschlecht`, `EMail`, `KlassenID`) 
+                     VALUES ('{vorname}', '{nachname}', '{genders}', '{email}', {klasseID})";
+
             db.ExecuteQuery(query);
             return true;
-
-
         }
-        
+
         /// <summary>
         /// Löscht einen Schüler aus der Datenbank.
         /// </summary>
@@ -629,10 +725,17 @@ namespace Muether_Meyer_Nachhilfe.common
         /// <param name="schuelerID">Die ID des Schülers.</param>
         /// <param name="genehmigt">Gibt an, ob der Tutor genehmigt ist.</param>
         /// <param name="loginID">Die ID des Logins.</param>
-        public void createTutor(int tutorID , int schuelerID , bool genehmigt , int loginID)
+        public void createTutor(int schuelerID, bool genehmigt, int loginID)
         {
             int genehmigtInt = genehmigt ? 1 : 0;
-            string query = $@"INSERT INTO `tutor`(`TutorID`, `SchuelerID`, `Genehmigt`, `LoginID`) VALUES ('{tutorID} ','{schuelerID}','{genehmigt}','{loginID}'";
+
+            int count = getLogins().Count();
+
+
+
+            // KORRIGIERT: Fehlendes Anführungszeichen am Ende und numerische Werte ohne Anführungszeichen
+            string query = $@"INSERT INTO `tutor`(`TutorID`, `SchuelerID`, `Genehmigt`, `LoginID`) VALUES ('{count++}','{schuelerID}','{genehmigtInt}','{loginID}')";
+
             db.ExecuteQuery(query);
         }
 
@@ -688,7 +791,7 @@ namespace Muether_Meyer_Nachhilfe.common
             }
             foreach (DataRow row in dataTable.Rows)
             {
-                int bildungsgangID = Convert.ToInt32(row["bildungsgang"]);
+                int bildungsgangID = Convert.ToInt32(row["BildungsgangID"]);
                 string bezeichnung = row["Bezeichnung"].ToString();
                 bildungsgang bildungsgang = new bildungsgang(bildungsgangID, bezeichnung);
                 bildungsgangs.Add(bildungsgang);
@@ -868,7 +971,144 @@ namespace Muether_Meyer_Nachhilfe.common
 
 
         #region Wochentag
+
+        /// <summary>
+        /// Ruft eine Liste aller Wochentage aus der Datenbank ab.
+        /// </summary>
+        /// <returns>Eine Liste von Wochentag-Objekten oder null, wenn keine Daten gefunden wurden.</returns>
+        public List<wochentag> GetWochentags()
+        {
+            List<wochentag> wochentags = new List<wochentag>();
+            DataTable dataTable = db.TableToDataTable("wochentage");
+            if (dataTable == null)
+            {
+                return null;
+            }
+            if (dataTable.Rows.Count == 0)
+            {
+                return null;
+            }
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int wochentagID = Convert.ToInt32(row["WTID"]);
+                string bezeichnung = row["Tag"].ToString();
+                wochentag wochentag = new wochentag(wochentagID, bezeichnung);
+                wochentags.Add(wochentag);
+            }
+            return wochentags;
+        }
+
+        /// <summary>
+        /// Überprüft, ob ein Wochentag mit der angegebenen Wochentag-ID existiert.
+        /// </summary>
+        /// <param name="wochentagID">Die ID des Wochentags.</param>
+        /// <returns>True, wenn der Wochentag existiert, andernfalls false.</returns>
+        public bool existWochentag(int wochentagID)
+        {
+            List<wochentag> wochentags = GetWochentags();
+            foreach (wochentag wochentag in wochentags)
+            {
+                if (wochentag.WochentagID == wochentagID) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Überprüft, ob ein Wochentag mit der angegebenen Bezeichnung existiert.
+        /// </summary>
+        /// <param name="tag">Die Bezeichnung des Wochentags.</param>
+        /// <returns>True, wenn der Wochentag existiert, andernfalls false.</returns>
+        public bool existWochentag(string tag)
+        {
+            List<wochentag> wochentags = GetWochentags();
+            foreach (wochentag wochentag in wochentags)
+            {
+                if (wochentag.Tag == tag) return true;
+            }
+            return false;
+        }
+
+
+
+
         #endregion
+
+
+        #region lehrerhatfach
+
+        /// <summary>
+        /// Ruft eine Liste aller Lehrer-Fach-Zuordnungen aus der Datenbank ab.
+        /// </summary>
+        /// <returns>Eine Liste von lehrerhatfach-Objekten oder null, wenn keine Daten gefunden wurden.</returns>
+        public List<lehrerhatfach> lehrerhatfach()
+        {
+            List<lehrerhatfach> lehrerhatfachs = new List<lehrerhatfach>();
+            DataTable dataTable = db.TableToDataTable("lehrerhatfach");
+            if (dataTable == null)
+            {
+                return null;
+            }
+            if (dataTable.Rows.Count == 0)
+            {
+                return null;
+            }
+            foreach (DataRow row in dataTable.Rows)
+            {
+                int lehrerID = Convert.ToInt32(row["TutorID"]);
+                int fachID = Convert.ToInt32(row["FachID"]);
+                lehrerhatfach lehrerhatfach = new lehrerhatfach(lehrerID, fachID);
+                lehrerhatfachs.Add(lehrerhatfach);
+            }
+            return lehrerhatfachs;
+        }
+        /// <summary>
+        /// Überprüft, ob eine Lehrer-Fach-Zuordnung mit den angegebenen Parametern existiert.
+        /// </summary>
+        /// <param name="lehrerID">Die ID des Lehrers.</param>
+        /// <param name="fachID">Die ID des Faches.</param>
+        /// <returns>True, wenn die Lehrer-Fach-Zuordnung existiert, andernfalls false.</returns>
+        public bool existlehrerhatfach(int lehrerID, int fachID)
+        {
+            List<lehrerhatfach> lehrerhatfachs = lehrerhatfach();
+            foreach (lehrerhatfach lehrerhatfach in lehrerhatfachs)
+            {
+                if (lehrerhatfach.TutorID == lehrerID && lehrerhatfach.FachID == fachID) return true;
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Erstellt eine neue Lehrer-Fach-Zuordnung in der Datenbank.
+        /// </summary>
+        /// <param name="lehrerID">Die ID des Lehrers.</param>
+        /// <param name="fachID">Die ID des Faches.</param>
+        /// <returns>True, wenn die Lehrer-Fach-Zuordnung erfolgreich erstellt wurde, andernfalls false.</returns>
+        public bool createlehrerhatfach(int lehrerID, int fachID)
+        {
+            if (existlehrerhatfach(lehrerID, fachID)) return false;
+            string query = $@"INSERT INTO `lehrerhatfach`(`TutorID`, `FachID`) VALUES ('{lehrerID}','{fachID}')";
+            db.ExecuteQuery(query);
+            return true;
+        }
+
+        /// <summary>
+        /// Löscht eine Lehrer-Fach-Zuordnung aus der Datenbank.
+        /// </summary>
+        /// <param name="lehrerID">Die ID des Lehrers.</param>
+        /// <param name="fachID">Die ID des Faches.</param>
+        /// <returns>True, wenn die Lehrer-Fach-Zuordnung erfolgreich gelöscht wurde, andernfalls false.</returns>
+        public bool deletelehrerhatfach(int lehrerID, int fachID)
+        {
+            if (!existlehrerhatfach(lehrerID, fachID)) return false;
+            string query = $@"DELETE FROM `lehrerhatfach` WHERE `TutorID` = '{lehrerID}' AND `FachID` = '{fachID}'";
+            db.ExecuteQuery(query);
+            return true;
+        }
+
+        #endregion
+
+
+
 
 
 

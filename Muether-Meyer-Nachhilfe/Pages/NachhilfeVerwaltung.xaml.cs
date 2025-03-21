@@ -2,20 +2,29 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace Muether_Meyer_Nachhilfe.Pages
 {
     /// <summary>
-    /// Interaktionslogik für Dashboard.xaml
+    /// Interaktionslogik für NachhilfeVerwaltung.xaml
     /// </summary>
-    public partial class Dashboard : Window
+    public partial class NachhilfeVerwaltung : Page
     {
         SQLManager db = new SQLManager();
-        public Dashboard()
+        public NachhilfeVerwaltung()
         {
-            InitializeComponent();
-            List<Nachhilfegesuch> nachhilfegesuches = db.getNachhilfegesuches("offen");
+            InitializeComponent(); List<Nachhilfegesuch> nachhilfegesuches = db.getNachhilfegesuches("offen");
             List<Fach> fachs = db.getFaecher();
             List<bildungsgang> bildungsgangs = db.getBildungsgang();
             List<Klasse> klassen = db.getKlassen();
@@ -31,7 +40,8 @@ namespace Muether_Meyer_Nachhilfe.Pages
                                    Fach = f.Bezeichnung,
                                    Beschreibung = ng.Beschreibung,
                                    Created_at = ng.CreatedAt,
-                                   Bildungsgang = k.Bezeichnung
+                                   Bildungsgang = k.Bezeichnung,
+                                   schueler = s.Vorname + " " + s.Nachname
                                };
 
             dataOutput.ItemsSource = combinedData.ToList();
