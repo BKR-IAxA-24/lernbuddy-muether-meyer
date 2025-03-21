@@ -20,7 +20,7 @@ namespace Muether_Meyer_Nachhilfe.Pages
     /// </summary>
     public partial class Login : Window
     {
-        SQLManager sqlmanager  = new SQLManager();
+        SQLManager sqlmanager = new SQLManager();
 
         public Login()
         {
@@ -36,10 +36,21 @@ namespace Muether_Meyer_Nachhilfe.Pages
             }
             else
             {
-              
+
                 if (sqlmanager.loginToDB(txtEmail.Text, txtPassword.Password))
                 {
-                    tutorpanel t = new tutorpanel();
+                    bool isAdmin = false;
+                    if (sqlmanager.existLogin(txtEmail.Text))
+                    {
+                        LoginDB login = sqlmanager.getLogin(txtEmail.Text);
+                        if (login.Admin == 1)
+                        {
+                            isAdmin = true;
+                            
+                        }
+                        else isAdmin = false;
+                    }
+                    tutorpanel t = new tutorpanel(isAdmin);
                     t.Show();
                     //close the login window
                     this.Close();

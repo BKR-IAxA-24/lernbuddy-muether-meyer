@@ -759,11 +759,10 @@ FROM
         /// <param name="tutorID">Die ID des Tutors.</param>
         /// <param name="genehmigt">Der neue Genehmigungsstatus des Tutors.</param>
         /// <returns>True, wenn der Genehmigungsstatus erfolgreich aktualisiert wurde, andernfalls false.</returns>
-        public bool updateTutorGenehmigt(int tutorID, bool genehmigt)
+        public bool updateTutorGenehmigt(int tutorID, int genehmigt)
         {
-            if (!existTutor(tutorID)) return false;
-            int genehmigtInt = genehmigt ? 1 : 0;
-            string query = $@"UPDATE `tutor` SET `Genehmigt` = '{genehmigtInt}' WHERE `TutorID` = '{tutorID}'";
+          
+            string query = $@"UPDATE `tutor` SET `Genehmigt` = '{genehmigt}' WHERE `tutor`.`SchuelerID` = '{tutorID}'";
             db.ExecuteQuery(query);
             return true;
         }

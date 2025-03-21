@@ -46,5 +46,16 @@ namespace Muether_Meyer_Nachhilfe.Pages
 
             dataOutput.ItemsSource = combinedData.ToList();
         }
+        //btnDelete_Click
+        private void btnDelete_Click(object sender, RoutedEventArgs e)
+        {
+            if (dataOutput.SelectedItem != null)
+            {
+                var selected = dataOutput.SelectedItem as dynamic;
+                Nachhilfegesuch nachhilfegesuch = db.getNachhilfegesuches("offen").Where(ng => ng.Beschreibung == selected.Beschreibung).FirstOrDefault();
+                db.deleteNachhilfegesuch(nachhilfegesuch.GesuchID);
+                MessageBox.Show("Nachhilfegesuch wurde gelöscht");
+            }
+        }
     }
 }

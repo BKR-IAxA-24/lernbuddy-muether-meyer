@@ -44,5 +44,24 @@ namespace Muether_Meyer_Nachhilfe.Pages
 
             dataOutput.ItemsSource = combinedData.ToList();
         }
+        //add btnLöschen_Click
+        private void btnLöschen_Click(object sender, RoutedEventArgs e)
+        {
+            if (dataOutput.SelectedItem != null)
+            {
+                var selected = dataOutput.SelectedItem as dynamic;
+                Schueler schueler = db.getSchueler().Where(s => s.Vorname == selected.FirstName && s.Nachname == selected.LastName).FirstOrDefault();
+                db.deleteSchueler(schueler.SchuelerID);
+                MessageBox.Show("Schüler wurde gelöscht");
+            }
+        }
+        private void btnGenehmigt_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = dataOutput.SelectedItem as dynamic;
+            Schueler schueler = db.getSchueler().Where(s => s.Vorname == selected.FirstName && s.Nachname == selected.LastName).FirstOrDefault();
+            if (db.updateTutorGenehmigt(schueler.SchuelerID, 1))
+            { MessageBox.Show("Tutor wurde genehmigt"); }
+            else { MessageBox.Show("NEIN"); }
+        }
     }
 }

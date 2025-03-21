@@ -7,7 +7,6 @@
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="tutorDash">
-
     <Grid>
         <DataGrid x:Name="dataOutput" AutoGenerateColumns="False" Margin="10,10,10,10" FontSize="30" GridLinesVisibility="All"
                   AlternatingRowBackground="#CCC" RowBackground="#FFF">
@@ -18,33 +17,46 @@
                 <Style TargetType="DataGridCell">
                     <Setter Property="BorderThickness" Value="0,0,2,2"/>
                     <Setter Property="BorderBrush" Value="Black"/>
-
                 </Style>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="BorderBrush" Value="Black"/>
                     <Setter Property="BorderThickness" Value="0,0,2,2"/>
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 </Style>
-                <Style x:Key="CenterAlignedTextStyle" TargetType="TextBlock">
+                <Style x:Key="CenterAlignedTextBlockStyle" TargetType="TextBlock">
                     <Setter Property="TextAlignment" Value="Center"/>
-                    <Setter Property="TextBlock.TextWrapping" Value="Wrap"/>
+                    <Setter Property="TextWrapping" Value="Wrap"/>
+                </Style>
+                <Style x:Key="CenterAlignedTextBoxStyle" TargetType="TextBox">
+                    <Setter Property="TextAlignment" Value="Center"/>
+                    <Setter Property="TextWrapping" Value="Wrap"/>
                 </Style>
             </DataGrid.Resources>
             <DataGrid.Columns>
                 <DataGridTextColumn Header="Fach" Binding="{Binding Fach}" Width="*" 
-                                    ElementStyle="{StaticResource CenterAlignedTextStyle}" 
-                                    EditingElementStyle="{StaticResource CenterAlignedTextStyle}" />
+                                    ElementStyle="{StaticResource CenterAlignedTextBlockStyle}" 
+                                    EditingElementStyle="{StaticResource CenterAlignedTextBoxStyle}" />
                 <DataGridTextColumn Header="Beschreibung" Binding="{Binding Beschreibung}" Width="*" 
-                                    ElementStyle="{StaticResource CenterAlignedTextStyle}" 
-                                    EditingElementStyle="{StaticResource CenterAlignedTextStyle}" />
+                                    ElementStyle="{StaticResource CenterAlignedTextBlockStyle}" 
+                                    EditingElementStyle="{StaticResource CenterAlignedTextBoxStyle}" />
                 <DataGridTextColumn Header="Erstellt am" Binding="{Binding Created_at}" Width="*" 
-                                    ElementStyle="{StaticResource CenterAlignedTextStyle}" 
-                                    EditingElementStyle="{StaticResource CenterAlignedTextStyle}" />
+                                    ElementStyle="{StaticResource CenterAlignedTextBlockStyle}" 
+                                    EditingElementStyle="{StaticResource CenterAlignedTextBoxStyle}" />
                 <DataGridTextColumn Header="Klasse" Binding="{Binding Bildungsgang}" Width="*" 
-                                    ElementStyle="{StaticResource CenterAlignedTextStyle}" 
-                                    EditingElementStyle="{StaticResource CenterAlignedTextStyle}" />
+                                    ElementStyle="{StaticResource CenterAlignedTextBlockStyle}" 
+                                    EditingElementStyle="{StaticResource CenterAlignedTextBoxStyle}" />
                 <DataGridTextColumn Header="Schüler" Binding="{Binding schueler}" Width="*" 
-                                    EditingElementStyle="{StaticResource CenterAlignedTextStyle}" />
+                                    ElementStyle="{StaticResource CenterAlignedTextBlockStyle}"
+                                    EditingElementStyle="{StaticResource CenterAlignedTextBoxStyle}" />
+
+                <!-- Add a button column -->
+                <DataGridTemplateColumn Header="Details" Width="Auto">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Details" Click="DetailsButton_Click" Margin="5"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
     </Grid>
